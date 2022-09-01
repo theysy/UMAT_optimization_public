@@ -35,10 +35,10 @@ The optimization code for
   
 # Screeshots
 1. Anisotropic yield function
-<p align="center"><img src="https://github.com/theysy/UMAT_OPTIMIZATION/blob/main/Screenshots/AA2090_YLD2004_OPT.png"></p>
+<p align="center"><img src="https://github.com/theysy/UMAT_OPTIMIZATION_PUBLIC/blob/main/Screenshots/AA2090_YLD2004_OPT.png"></p>
 
 2. Anisotropic hardening model: Cyclic loading
-<p align="center"><img src="https://github.com/theysy/UMAT_OPTIMIZATION/blob/main/Screenshots/HAH20_CYCLIC_OPT.png"></p>
+<p align="center"><img src="https://github.com/theysy/UMAT_OPTIMIZATION_PUBLIC/blob/main/Screenshots/HAH20_CYCLIC_OPT.png"></p>
 
 3. Anisotropic hardening model: Cross loading
-<p align="center"><img src="https://github.com/theysy/UMAT_OPTIMIZATION/blob/main/Screenshots/HAH20_CROSS_OPT.png"></p>
+<p align="center"><img src="https://github.com/theysy/UMAT_OPTIMIZATION_PUBLIC/blob/main/Screenshots/HAH20_CROSS_OPT.png"></p>

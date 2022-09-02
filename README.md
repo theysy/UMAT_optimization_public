@@ -7,7 +7,7 @@ The optimization code for
   2. Anisotropic Hardening models
         - Chaboche-type
         - Yoshida-Uemori
-        - HAH11 / HAH14 / HAH20
+        - HAH11 / HAH14 / HAH20 / HEXAH (HAH22)
   3. Dislocation hardening model
         - RGBV (K. Kitayama et al.)
 

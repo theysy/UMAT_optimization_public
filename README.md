@@ -4,10 +4,12 @@ The optimization code for
         - Hill 1948
         - Yld2000-2d
         - Yld2004-18p
+        + Any other anisotropic yield function
   2. Anisotropic Hardening models
         - Chaboche-type
         - Yoshida-Uemori
         - HAH11 / HAH14 / HAH20 / HEXAH (HAH22)
+        + Any other anisotropic hardening models
   3. Dislocation hardening model
         - RGBV (K. Kitayama et al.)
 

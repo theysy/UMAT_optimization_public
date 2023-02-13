@@ -334,6 +334,9 @@ for k=0:91
     SIMdata(k+1,2)=ps(1)/sig_bar;
     % [3.1.5] R-value
     dfds=statevUMAT(end, 59:58+ntens);
+    if k==45
+        test=1;
+    end
     ple=rotmat(-ang,dfds,1);
     if k <= 90
         SIMdata(k+1,3)=-ple(2)/(ple(1)+ple(2));

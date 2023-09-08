@@ -26,9 +26,9 @@ addpath 'Library'
 addpath 'UMAT_props'
 tic
 %%   Compilation of UMAT subroutine using MEX.
-%    mex -g MML_UMAT.f
+%    mex MML_UMAT.f
 %%  Identification opt_par: Read PROPS.csv
-props=csvread('props_AA6022_YLD2K4_YU.csv');
+props=csvread('PROPS_CR980XG3_HAH20CR.csv');
 % props=csvread('props_RGBV_FINAL.csv');
 optparam.props=props;
 %%   SET plasticity model parameters
@@ -62,26 +62,27 @@ elseif floor(props(1))==2
 % [3] HAH11
 elseif props(1)==3
     X=[200, 120, 0.35, 0.9, 15]'; % K1, K2, K3, K4, K5
-     lb=[50 50 0.1 0.8 1];
-     ub=[200 200 1 1 30];
-%     lb=X;
-%     ub=X;
+%      lb=[50 50 0.1 0.8 1];
+%      ub=[200 200 1 1 30];
+    lb=X;
+    ub=X;
 % [4] HAH14
 elseif props(1)==4
-    X=[100, 150, 0.55, 0.85, 5]'; % K1, K2, K3, K4, K5
-%     lb=[50 50 0.3 0.8 1.0];
-%     ub=[200 200 1.0 1.0 30];
+%     X=[100, 150, 0.1, 0.85, 5]'; % K1, K2, K3, K4, K5
+%     lb=[10 10  0.2 0.6 1.0];
+%     ub=[200 50 0.5 1.0 40];
+%     X=(lb+ub)./2;
+    X=props(23:27);
     lb=X;
     ub=X;
 % [5] HAH20
 elseif floor(props(1))==5
-%     X=[300, 300, 0.5, 0.93, 15]'; % K1, K2, K3, K4, K5
-%     lb=[50, 50, 0.3, 0.9, 1];
-%     ub=[450 450 1.0 0.95 60];
-%     X=[300, 250, 0.5, 0.92, 30]'; % K1, K2, K3, K4, K5
-    X=props(23:27);
-    lb=X;
-    ub=X;
+    lb=[10, 10, 0.2, 0.5, 1];
+    ub=[100 100 0.5 0.95 60];
+    X=(lb+ub)./2;
+%     X=props(23:27);
+%     lb=X;
+%     ub=X;
 end
 xdim=max(size(X));
 %% SET optimization parameters
@@ -97,8 +98,10 @@ optparam.xdim=xdim;
 optparam.lb=lb;
 optparam.ub=ub;
 optparam.weight(1)= 1.0;
-optparam.weight(2)= 3.0;
-optparam.filemat{1} = 'AA6022_EXP_9CYCLE';
+optparam.weight(2)= 1.0;
+optparam.filemat{1} = 'CR980XG3_shear_E30_FR';
+% optparam.filemat{2} = 'CR980XG3_shear_E20_FR';
+% optparam.filemat{3} = 'CR980XG3_shear_E30_FR';
 optparam.mode=11; % Tension-Compression (cyclic)
 optparam.optalg=1; % 1: Nelder-Mead | 2: Genetic | 3: Pattensearch | 4: Globalsearch
 if optparam.optalg==1 || optparam.optalg==4
@@ -106,13 +109,13 @@ if optparam.optalg==1 || optparam.optalg==4
 else
     optparam.plotmode=0; % 0: No plotting | 1: Plotting
 end
-optparam.error=1; % 1: sum_sqaure | 2: sum_abs | 3: root_mean_square | 4: mean_abs
+optparam.error=2; % 1: sum_sqaure | 2: sum_abs | 3: root_mean_square | 4: mean_abs
 %% Reference stress state
 %   ntens=3: s=[s11 s22 s12]
 %   ntens=6: s=[s11 s22 s33 s12 s13 s23]
     s=zeros([1,optparam.ntens]);
-    s(1)=1; % Uniaxial tension
-%     s(3)=1; % Simple shear
+%     s(1)=1; % Uniaxial tension
+    s(3)=1; % Simple shear
 optparam.s=s;
 %% optimization algorithm
 % set default TolFun

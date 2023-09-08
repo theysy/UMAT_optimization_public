@@ -29,14 +29,12 @@ C             -DIRECT METHOD IS UPDATED (20210623)                            C
 C             -HEXAH MODEL IS UPDATED (20220101)                              C
 C                                                                             C
 C     REFERENCES                                                              C
-C         [1] F.BARLAT  ET AL. IJP     (2003): YLD2000-2D                     C
-C         [2] F.BARLAT  ET AL. IJP     (2012): HAH11                          C
-C         [3] F.BARLAT  ET AL. IJP     (2014): HAH14                          C
-C         [4] J.W. LEE  ET AL. IJP     (2012): CUTTING PLANE METHOD           C
-C         [5] J.W. LEE  ET AL. CMAM    (2012): CLOSEST POINT PROJECTION       C
-C         [6] J.W. YOON ET AL. IJP     (2004): MULTI-STAGE EULER BACKWARD     C
-C                                            : THE ANALYTICAL DERIVATIVE OF   C
-C                                              YLD2000_2D MODEL               C
+C         [1] F.BARLAT  ET AL. IJP      (2003): YLD2000-2D                    C
+C         [2] F.BARLAT  ET AL. IJP      (2012): HAH11                         C
+C         [3] F.BARLAT  ET AL. IJP      (2014): HAH14                         C
+C         [4] J.W. LEE  ET AL. IJP      (2012): CUTTING PLANE METHOD          C
+C         [5] J.W. LEE  ET AL. CMAM     (2012): CLOSEST POINT PROJECTION      C
+C         [6] J.W. YOON ET AL. IJP      (2004): MULTI-STAGE EULER BACKWARD    C
 C         [7] F. BARLAT ET AL.  IJP     (2005): YLD2004_18P                   C
 C         [8] H. ARETZ          ESAFORM (2007): SCALED FDM                    C
 C         [9] T.J. PARK ET AT.  IJSS    (2012): CHABOCHE1-SIMPLER MODEL       C
@@ -50,148 +48,11 @@ C         [16]K. KITAYAMA ET AL.IJP     (2013): CRYSTALLOGRAPHIC RGBV         C
 C         [17]S.Y. YOON ET AL.  CMAME   (2020): LINE-SEARCH FOR HARDENING     C
 C         [18]C.G. BROYDEN      MOC     (1965): BROYDEN METHOD                C
 C         [19]B. REYNE ET AL.   IJP     (2022): HEXAH (HAH22)                 C
-C         [20]S. YOON ET AL.    IJMS    (2023): NSPM                          C
+C         [20]S. YOON ET AL.    IJMS    (2023a): NSPM                         C
+C         [21]S. YOON ET AL.    MOM     (2023b): NSPM                         C
 C                                                                             C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C
-C-----------------------------------------------------------------------
-C     STATE VARIABLES FOR UMAT
-C     STATEV(1)   : EQUIVALENT PLASTIC STRAIN
-C     STATEV(2)   : EQUIVALENT STRESS
-C     STATEV(3)   : YOUNG'S MODULUS
-C     STATEV(4)   : YIELD CRITERION(0: ELASTIC / 1: PLASTIC)
-C     STATEV(5)   : ALOGRITHMIC ITERATION
-C     STATEV(6)   : EQUIVALENT PLASTIC STRAIN INCREMENT
-C-----------------------------------------------------------------------
-C     # STATE VARIABLES OF CHABOCHE
-C     STATEV(7:12)    : BACK-STRESS: ALPHA
-C-----------------------------------------------------------------------
-C     # STATE VARIABLES OF YOSHIDA-UEMORI
-C     STATEV(7:12)    : BACK-STRESS: ALPHA
-C     STATEV(13:18)   : CENTER OF BOUNDING SURFACE: BETA
-C     STATEV(19:24)   : CENTER OF NON-IH SURFACE  : Q
-C     STATEV(25)      : RADIUS OF BOUNDING SURFACE: R
-C-----------------------------------------------------------------------
-C     # STATE VARIABLES IN HAH11 MODELS
-C     [1] G-VALUES
-C     STATEV(7) : STRAIN-PATH CHANGE PARAMETER
-C     STATEV(8) : G(1): G1
-C     STATEV(9) : G(2): G2
-C     STATEV(10): G(3): G3
-C     STATEV(11): G(4): G4
-C     [2] MICROSTRUCTURE DEVIATOR
-C     STATEV(12): H11
-C     STATEV(13): H22
-C     STATEV(14): H33
-C     STATEV(15): H12
-C     STATEV(16): H23
-C     STATEV(17): H31
-C----------------------------------------------------------------------
-C     # STATE VARIABLES IN HAH14 MODELS
-C     [1] G-VALUES
-C     STATEV(7) : STRAIN-PATH CHANGE PARAMETER
-C     STATEV(8) : G(1): G1
-C     STATEV(9) : G(2): G2
-C     STATEV(10): G(3): G3
-C     STATEV(11): G(4): G4
-C     STATEV(12): G(5): GS
-C     STATEV(13): G(6): GL
-C     [2] MICROSTRUCTURE DEVIATOR
-C     STATEV(14): H11
-C     STATEV(15): H22
-C     STATEV(16): H33
-C     STATEV(17): H12
-C     STATEV(18): H23
-C     STATEV(19): H31
-C-----------------------------------------------------------------------
-C     # STATE VARIABLES IN HAH20 & HAH20 MODELS
-C     [1] G-VALUES
-C     STATEV(7) : STRAIN-PATH CHANGE PARAMETER
-C     STATEV(8) : G(1): G-    *
-C     STATEV(9) : G(2): G+    *
-C     STATEV(10): G(3): G3    *
-C     STATEV(11): G(4): G4    *
-C     STATEV(12): G(5): GP    *
-C     STATEV(13): G(6): GS    *
-C     STATEV(14): G(7): GC    *
-C     STATEV(15): G(8): GL    *
-C     STATEV(16): G(9): G3*   *
-C     STATEV(17): G(10): GP*  *
-C     [2] MICROSTRUCTURE DEVIATOR
-C     STATEV(18): H11        *
-C     STATEV(19): H22        *
-C     STATEV(20): H33        *
-C     STATEV(21): H12        *
-C     STATEV(22): H23
-C     STATEV(23): H31
-C     STATEV(24): HP11       *
-C     STATEV(25): HP22       *
-C     STATEV(26): HP33       *
-C     STATEV(27): HP12       *
-C     STATEV(28): HP23
-C     STATEV(29): HP31
-C     STATEV(30): HS11       *
-C     STATEV(31): HS22       *
-C     STATEV(32): HS33       *
-C     STATEV(33): HS12       *
-C     STATEV(34): HS23
-C     STATEV(35): HS31
-C-----------------------------------------------------------------------
-C     # STATE VARIABLES IN HEXAH MODELS
-C     [1] GLOBAL STATE VARIABLES
-C     STATEV(7) : STRAIN-PATH CHANGE PARAMETER
-C     STATEV(8) : GP
-C     STATEV(9) : GL
-C     STATEV(10): NSS
-C     STATEV(11): PLAS(1): E11/E11   *
-C     STATEV(12): PLAS(2): E22/E22   *
-C     STATEV(13): PLAS(3): E33/E12   *
-C     STATEV(14): PLAS(4): E12
-C     STATEV(15): PLAS(5): E23 <-> E23
-C     STATEV(16): PLAS(6): E13
-C     [2] LOCAL STATE VARIABLES AT PREVIOUSLY ACTIVATED SLIP SYSTEM (NSS=1)
-C     STATEV(17) : G(1,1): G-
-C     STATEV(18) : G(1,2): G+
-C     STATEV(19) : G(1,3): GC
-C     STATEV(20) : DEV_H(1,1): H11    *
-C     STATEV(21) : DEV_H(1,2): H22    *
-C     STATEV(22) : DEV_H(1,3): H33    *
-C     STATEV(23) : DEV_H(1,4): H12
-C     STATEV(24) : DEV_H(1,5): H23
-C     STATEV(25) : DEV_H(1,6): H13
-C     STATEV(26) : EQPLASI(1): LOCAL EFFECTIVE STRAIN
-C     STATEV(27) : COS_X(1) : LOCAL STRAIN PATH CHANGE PARAMETER
-C     [3] LOCAL STATE VARIABLES AT CURRENTLY ACTIVATED SLIP SYSTEM (NSS=2)
-C     STATEV(28) : G(2,1): G-
-C     STATEV(29) : G(2,2): G+
-C     STATEV(30) : G(2,3): GC
-C     STATEV(31) : DEV_H(2,1): H11    *
-C     STATEV(32) : DEV_H(2,2): H22    *
-C     STATEV(33) : DEV_H(2,3): H33    *
-C     STATEV(34) : DEV_H(2,4): H12
-C     STATEV(35) : DEV_H(2,5): H23
-C     STATEV(36) : DEV_H(2,6): H13
-C     STATEV(37) : EQPLASI(2): LOCAL EFFECTIVE STRAIN
-C     STATEV(38) : COS_X(1) : LOCAL STRAIN PATH CHANGE PARAMETER
-C     [3] FOR ADDITIONAL SLIP SYSTEM
-C     NES=3 -> STATEV(39:49)....*
-C     NES=4 -> STATEV(50:60)
-C     NES=5 -> STATEV(61:71)
-C-----------------------------------------------------------------------
-C     # STATE VARIABLES OF RGBV
-C     STATEV(50): RHO_F
-C     STATEV(51): RHO_R1(+)
-C     STATEV(52): RHO_R2(-)
-C     STATEV(53): RHO_L
-C     STATEV(54): RHO_F01
-C     STATEV(55): RHO_F02
-C     STATEV(56): RHO_TOT
-C     STATEV(57): DRDE
-C     STATEV(58): BACK-STRESS(OPTIONAL)
-C-----------------------------------------------------------------------
-C     # GRADIENT OF YIELD SURFACE
-C     STATEV(59:65): DFDS(1:6)
-C     NSTAT_VAR= 65
 C-----------------------------------------------------------------------
 C     #   UMAT PARAMETERS
 C     PROPS(1): OPTIONS FOR ANISOTROPIC HARDENING
@@ -208,13 +69,13 @@ C                 2- HILL 1948
 C                 3- YLD2000_2D   [1]
 C                 4- YLD2004_18P  [7]
 C     PROPS(3): OPTIONS FOR HARDENING INPUT: 
-C                 1- SWIFT: SIGMA=P1*(P2+EQPLAS)**P3
-C                 2- VOCE: SIGMA=P1-P2*EXP(-P3*EQPLAS)
-C                 3- MODIFIED VOCE: SIGMA= P1 + P2*EQPLAS + P3*(1-EXP(-P4*EQPLAS))
-C                 4- SWIFT+MODIFIED VOCE: P1*(P2+EQPLAS)**P3 + P4 + P5*EQPLAS + P6*(1-EXP(-P7*EQPLAS))
-C                 5- HOCKETT-SHERBY + LINEAR: P1-(P1-P2)*EXP(-P3*EQPLAS**P4)+P5
-C                 6- COMBINED SWIFT-VOCE: P1*[P2*(P3+EQPLAS)**P4]+(1-P1)*[P5-P6*EXP(-P7*EQPLAS)]
-C                 7- DISLOCATION-BASED HARDENING MODEL: P1*[P2+P3*P4*P5*SQRT(RHO(EQPLAS))
+C                 1- SWIFT: SIGMA=P1*(P2+EPLAS)**P3
+C                 2- VOCE: SIGMA=P1-P2*EXP(-P3*EPLAS)
+C                 3- MODIFIED VOCE: SIGMA= P1 + P2*EPLAS + P3*(1-EXP(-P4*EPLAS))
+C                 4- SWIFT+MODIFIED VOCE: P1*(P2+EPLAS)**P3 + P4 + P5*EPLAS + P6*(1-EXP(-P7*EPLAS))
+C                 5- HOCKETT-SHERBY + LINEAR: P1-(P1-P2)*EXP(-P3*EPLAS**P4)+P5
+C                 6- COMBINED SWIFT-VOCE: P1*[P2*(P3+EPLAS)**P4]+(1-P1)*[P5-P6*EXP(-P7*EPLAS)]
+C                 7- DISLOCATION-BASED HARDENING MODEL: P1*[P2+P3*P4*P5*SQRT(RHO(EPLAS))
 C     PROPS(4): OPTIONS FOR E-MODULUS DEGRADATION INPUT:
 C                 1- CONSTANT E
 C                 2- CHORD E
@@ -322,6 +183,146 @@ C     PROPS(32):      YM: CM (EXPONENT)
 C     PROPS(33:41):   Y1~Y9: C1~C9
 C     PROPS(42:50):   Y10~Y18: C10~C18
 C-----------------------------------------------------------------------
+C
+C     #   STATE VARIABLES FOR UMAT
+C     STATEV(1)   : EQUIVALENT PLASTIC STRAIN INCREMENT
+C     STATEV(2)   : EQUIVALENT PLASTIC STRAIN
+C     STATEV(3)   : EQUIVALENT STRESS
+C     STATEV(4)   : YIELD CRITERION(0: ELASTIC / 1: PLASTIC)
+C     STATEV(5)   : ALOGRITHMIC ITERATION
+C-----------------------------------------------------------------------
+C     GRAIDENT OF YIELD SURFACE
+C     STATEV(6:11): DFDS(1:NDIM3)
+C-----------------------------------------------------------------------
+C     # STATE VARIABLES OF CHABOCHE
+C     STATEV(13:18)    : BACK-STRESS: ALPHA
+C-----------------------------------------------------------------------
+C     # STATE VARIABLES OF YOSHIDA-UEMORI
+C     STATEV(13:18)    : BACK-STRESS: ALPHA
+C     STATEV(19:24)    : CENTER OF BOUNDING SURFACE: BETA
+C     STATEV(25:30)    : CENTER OF NON-IH SURFACE  : Q
+C     STATEV(31)       : RADIUS OF BOUNDING SURFACE: R
+C     STATEV(32)       : STAG_R
+C-----------------------------------------------------------------------
+C     # STATE VARIABLES IN HAH11 MODELS
+C     [1] G-VALUES
+C     STATEV(12) : STRAIN-PATH CHANGE PARAMETER
+C     STATEV(13) : G(1): G1
+C     STATEV(14) : G(2): G2
+C     STATEV(15): G(3): G3
+C     STATEV(16): G(4): G4
+C     [2] MICROSTRUCTURE DEVIATOR
+C     STATEV(17): H11
+C     STATEV(18): H22
+C     STATEV(19): H33
+C     STATEV(20): H12
+C     STATEV(21): H23
+C     STATEV(22): H31
+C----------------------------------------------------------------------
+C     # STATE VARIABLES IN HAH14 MODELS
+C     [1] G-VALUES
+C     STATEV(12) : STRAIN-PATH CHANGE PARAMETER
+C     STATEV(13) : G(1): G1
+C     STATEV(14) : G(2): G2
+C     STATEV(15): G(3): G3
+C     STATEV(16): G(4): G4
+C     STATEV(17): G(5): GS
+C     STATEV(18): G(6): GL
+C     [2] MICROSTRUCTURE DEVIATOR
+C     STATEV(19): H11
+C     STATEV(20): H22
+C     STATEV(21): H33
+C     STATEV(22): H12
+C     STATEV(23): H23
+C     STATEV(24): H31
+C-----------------------------------------------------------------------
+C     # STATE VARIABLES IN HAH20 & HAH20 MODELS
+C     [1] G-VALUES
+C     STATEV(12): STRAIN-PATH CHANGE PARAMETER
+C     STATEV(13): G(1): G-    *
+C     STATEV(14): G(2): G+    *
+C     STATEV(15): G(3): G3    *
+C     STATEV(16): G(4): G4    *
+C     STATEV(17): G(5): GP    *
+C     STATEV(18): G(6): GS    *
+C     STATEV(19): G(7): GC    *
+C     STATEV(20): G(8): GL    *
+C     STATEV(21): G(9): G3*   *
+C     STATEV(22): G(10): GP*  *
+C     [2] MICROSTRUCTURE DEVIATOR
+C     STATEV(23): H11        *
+C     STATEV(24): H22        *
+C     STATEV(25): H33        *
+C     STATEV(26): H12        *
+C     STATEV(27): H23
+C     STATEV(28): H31
+C     STATEV(29): HP11       *
+C     STATEV(30): HP22       *
+C     STATEV(31): HP33       *
+C     STATEV(32): HP12       *
+C     STATEV(33): HP23
+C     STATEV(34): HP31
+C     STATEV(35): HS11       *
+C     STATEV(36): HS22       *
+C     STATEV(37): HS33       *
+C     STATEV(38): HS12       *
+C     STATEV(39): HS23
+C     STATEV(40): HS31
+C-----------------------------------------------------------------------
+C     # STATE VARIABLES IN HEXAH MODELS
+C     [1] GLOBAL STATE VARIABLES
+C     STATEV(12) : STRAIN-PATH CHANGE PARAMETER
+C     STATEV(13) : GP
+C     STATEV(14) : GL
+C     STATEV(15): NSS
+C     STATEV(16): PLAS(1): E11/E11   *
+C     STATEV(17): PLAS(2): E22/E22   *
+C     STATEV(18): PLAS(3): E33/E12   *
+C     STATEV(19): PLAS(4): E12
+C     STATEV(20): PLAS(5): E23 <-> E23
+C     STATEV(21): PLAS(6): E13
+C     [2] LOCAL STATE VARIABLES AT PREVIOUSLY ACTIVATED SLIP SYSTEM (NSS=1)
+C     STATEV(22) : G(1,1): G-
+C     STATEV(23) : G(1,2): G+
+C     STATEV(24) : G(1,3): GC
+C     STATEV(25) : DEV_H(1,1): H11    *
+C     STATEV(26) : DEV_H(1,2): H22    *
+C     STATEV(27) : DEV_H(1,3): H33    *
+C     STATEV(28) : DEV_H(1,4): H12
+C     STATEV(29) : DEV_H(1,5): H23
+C     STATEV(30) : DEV_H(1,6): H13
+C     STATEV(31) : EPLASI(1): LOCAL EFFECTIVE STRAIN
+C     STATEV(32) : COS_X(1) : LOCAL STRAIN PATH CHANGE PARAMETER
+C     [3] LOCAL STATE VARIABLES AT CURRENTLY ACTIVATED SLIP SYSTEM (NSS=2)
+C     STATEV(33) : G(2,1): G-
+C     STATEV(34) : G(2,2): G+
+C     STATEV(35) : G(2,3): GC
+C     STATEV(36) : DEV_H(2,1): H11    *
+C     STATEV(37) : DEV_H(2,2): H22    *
+C     STATEV(38) : DEV_H(2,3): H33    *
+C     STATEV(39) : DEV_H(2,4): H12
+C     STATEV(40) : DEV_H(2,5): H23
+C     STATEV(41) : DEV_H(2,6): H13
+C     STATEV(42) : EPLASI(2): LOCAL EFFECTIVE STRAIN
+C     STATEV(43) : COS_X(1) : LOCAL STRAIN PATH CHANGE PARAMETER
+C     [3] FOR ADDITIONAL SLIP SYSTEM
+C     NES=3 -> STATEV(44:54)....*
+C     NES=4 -> STATEV(55:65)
+C     NES=5 -> STATEV(66:76)
+C-----------------------------------------------------------------------
+C     # STATE VARIABLES OF RGBV
+C     STATEV(55): RHO_F
+C     STATEV(56): RHO_R1(+)
+C     STATEV(57): RHO_R2(-)
+C     STATEV(58): RHO_L
+C     STATEV(59): RHO_F01
+C     STATEV(60): RHO_F02
+C     STATEV(61): RHO_TOT
+C     STATEV(62): DRDE
+C     STATEV(63): BACK-STRESS(OPTIONAL)
+C-----------------------------------------------------------------------
+C     NSTATV= 65
+C-----------------------------------------------------------------------
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C                                                                      C
 C     SUB.1   UMAT                                                     C
@@ -335,9 +336,9 @@ C
      1          DSTRAN(NTENS), DDSDDE(NTENS,NTENS)
       DIMENSION DFDS(NTENS), DDFDDS(NTENS,NTENS)
 
-      REAL*8, DIMENSION(:), ALLOCATABLE :: STAT_VAR, DEV_H0, DEV_SIG
+      REAL*8, DIMENSION(:), ALLOCATABLE :: STAT_VAR
 C
-      COMMON /KUMAT/ NPROPS, NSTATV, NTENS
+      COMMON /KUMAT/ NPROPS, NSTATV, NTENS, NDATA
       COMMON /KOPTION/ HARD_PAR, YLD_PAR, FLOW_PAR, SUA_PAR, GRAD_PAR
       COMMON /KSIZE/ NDIM1, NDIM2, NDIM3, NDIM4, NDIM5, NDIM6, NDIM7
       COMMON /KYLD1/ YM, Y1, Y2, Y3, Y4, Y5, Y6, Y7, Y8, Y9
@@ -345,7 +346,6 @@ C
       COMMON /KIHARD/ P1, P2, P3, P4, P5, P6, P7, P8, P9, P10
       COMMON /KAHARD/ H1, H2, H3, H4, H5, H6, H7, H8, H9, H10, H11
       COMMON /KHEXAH/ MSS
-      COMMON /KDEBUG/ KNOEL, KNPT, KKSTEP, KKINC, KLAYER
 C-----------------------------------------------------------------------
 C     1.1     UMAT PARAMETERS
 C     [1]     ANISOTROPIC HARDENING MODEL PARAMETERS
@@ -420,7 +420,7 @@ C     #   STAT_VAR(23:28)= DEV_HS
 C     #   STAT_VAR(1:3)= GP/GL/NSS
 C     #   STAT_VAR(4:NDIM)= PLAS ! NDIM=3+NDIM3
 C     #   STAT_VAR(NDIM+1:NDIM+NSS*(NDIM5+NDIM4))= G-/G+/GC/DEV_H
-C     #   STAT_VAR(NDIM+NSS*(NDIM5+NDIM4+1):NDIM+NSS*(NDIM5+NDIM4+1))= EQPLASI
+C     #   STAT_VAR(NDIM+NSS*(NDIM5+NDIM4+1):NDIM+NSS*(NDIM5+NDIM4+1))= EPLASI
 C     #   STAT_VAR(NDIM+NSS*(NDIM5+NDIM4+2):NDIM+NSS*(NDIM5+NDIM4+2))= COS_X
           MSS=3                               ! MAXIMUM NUMBER OF SLIP SYSTEM
           NDIM6= 3+NDIM3                      ! GLOBAL VARIABLES
@@ -445,20 +445,10 @@ C     #   STAT_VAR(NDIM7+9)=DRDE
       END IF
       NDIM6=NDIM6+NDIM7
 
-      ALLOCATE(DEV_H0(NDIM4), DEV_SIG(NDIM4), STAT_VAR(NDIM6))
+      ALLOCATE(STAT_VAR(NDIM6))
 C-----------------------------------------------------------------------
 C     1.3     READ USER MATERIAL PROPERTIES
-C     1.3.1   MECHANICAL PROPERTIES
-C     [1]     YOUNG'S MODULUS
-      EMOD=STATEV(3)
-      EMOD0=PROPS(7)
-      IF(EMOD.EQ.0.D0) THEN
-          EMOD=EMOD0
-      END IF
-C     [2]     POISSON'S RATIO
-      ENU=PROPS(8)
-C
-C     1.3.2   READ PLASTICITY MODEL COEFFICIENTS
+C     1.3.1   READ PLASTICITY MODEL COEFFICIENTS
 C     [1]     ISOTROPIC HARDENING LAW PARAMETERS
       P1=PROPS(9)
       P2=PROPS(10)
@@ -514,219 +504,30 @@ C-----------------------------------------------------------------------
 C     1.4     ELASTIC TANGENT MODULUS
 C     #   INITIALIZATION OF ELASTIC STIFFNESS MATRIX
 C         ISOTROPIC ELASTIC STIFFNESS MATRIX FOR PLANE STRESS
-      DDSDDE=0.D0
-      XMU= EMOD/(2.D0*(1.D0+ENU))                 ! #SHEAR MODULUS:   ¥ì=E/[2*(1+¥í)]
-      XLM= ENU*EMOD/((1.D0+ENU)*(1.D0-2.D0*ENU))  ! #LAME'S CONSTANT: ¥ë=E¥í/[(1+¥í)(1-2¥í)]
-      XVAL=EMOD/(1.D0-ENU**2)
-      IF(NDIM3 .EQ. 3) THEN
-C     #   DDSDDE(1:2, 1:2)
-          DO I=1, NDIM1
-          DO J=1, NDIM1
-              DDSDDE(I,J)= XVAL*ENU
-          END DO
-              DDSDDE(I,I)= XVAL*1.D0
-          END DO
-C     #   DDSDDE(3,3)
-          DDSDDE(NDIM3,NDIM3)= 1.D0*XMU
-      ELSE
-C     #   DDSDDE(1:3, 1:3)
-          DO I=1, NDIM1
-          DO J=1, NDIM1
-              DDSDDE(I,J)=XLM
-          END DO
-          DDSDDE(I,I)=XLM+2.D0*XMU
-          END DO
-C     #   DDSDDE(4:6, 4:6)
-          DO I=NDIM1+1, NDIM3
-              DDSDDE(I,I)=XMU
-          END DO
-      END IF
+      CALL ELASTIC_STIFFNESS(PROPS, DDSDDE)
 C-----------------------------------------------------------------------
-C     1.5     TIRAL STRESS
+C     1.5     ELASTIC TIRAL STRESS
 C     #   THE UPDATED STRESS IS INITIALLY ASSUMED TO BE PURELY ELASTIC
 C         FOR A GIVEN STRAIN INCREMENT, WHILE PLASTIC STATE VARIABLES
 C         ARE KEPT CONSTANT [4].
-C     [1]     TOTAL STRAIN
-      DO I=1, NDIM3
-C          STRAN(I)=STRAN(I)+DSTRAN(I)
-      END DO
-C     [2]     ELASTIC TRIAL STRESS
 C     C = DDSDDE
 C     SIGT(N+1) = SIG(N) + C:DSTRAN(N+1)  [EQ.(23)][4]
       STRESS= STRESS + MATMUL(DDSDDE,DSTRAN)
 C-----------------------------------------------------------------------
 C     1.6     READ STATE VARIABLES
-C     [1] EQUIVALENT PLASTIC STRAIN
-      EQPLAS=STATEV(1)
-C     [2] EFFECTIVE PLASTIC STRAIN INCREMENT
-      D_EQPLAS=STATEV(6)
+C     [1] EFFECTIVE PLASTIC STRAIN INCREMENT
+      DEPLAS=STATEV(1)
+C     [2] EQUIVALENT PLASTIC STRAIN
+      EPLAS=STATEV(2)
 C     [3] STATE VARIABLES OF HARDENING MODELS
-C     #   WHEN EQPLAS=0, THE STATE VARIABLES WOULD BE INITIALIZED
+C     #   WHEN EPLAS=0, THE STATE VARIABLES WOULD BE INITIALIZED
       STAT_VAR=0.D0
-      IF(EQPLAS .EQ. 0.D0) THEN
-          IF(HARD_PAR .EQ. 1.D0) THEN ! CHABOCHE
-              STAT_VAR= 0.D0
-          ELSEIF(HARD_PAR .EQ. 2.D0) THEN ! YOSHIDA-UEMORI
-              STAT_VAR= 0.D0
-          ELSEIF(HARD_PAR .EQ. 3.D0) THEN ! HAH11
-C         #   G-VALUES
-              STAT_VAR(1:NDIM5)=1.D0
-C         #   DEV_H
-              CALL DEVIATORIC(STRESS, DEV_SIG)
-              CALL NORM_HAH(DEV_SIG, DEV_H0)
-              DO I=1, NDIM4
-                  STAT_VAR(NDIM5+I)=DEV_H0(I)
-              END DO
-          ELSEIF(HARD_PAR .EQ. 4.D0) THEN ! HAH14
-C         #   G-VALUES
-              STAT_VAR(1:NDIM5)=1.D0
-C         #   DEV_H
-              CALL DEVIATORIC(STRESS, DEV_SIG)
-              CALL NORM_HAH(DEV_SIG, DEV_H0)
-              DO I=1, NDIM4
-                  STAT_VAR(NDIM5+I)=DEV_H0(I)
-              END DO
-          ELSEIF(FLOOR(HARD_PAR) .EQ. 5.D0) THEN ! HAH20
-C         #   G-VALUES
-              STAT_VAR(1:NDIM5)= 1.D0
-              CALL DEVIATORIC(STRESS, DEV_SIG)
-              CALL NORM_HAH(DEV_SIG, DEV_H0)
-              DO I=1, NDIM4
-C         #   DEV_H
-                  STAT_VAR(NDIM5+I)=DEV_H0(I)
-C         #   DEV_HP
-                  STAT_VAR(NDIM5+NDIM4+I)=DEV_H0(I)
-C         #   DEV_HS
-                  STAT_VAR(NDIM5+2*NDIM4+I)=DEV_H0(I)
-              END DO
-          ELSEIF(FLOOR(HARD_PAR) .EQ. 6.D0) THEN ! HEXAH
-C         [1] GLOBAL STATE VARIABLES
-              NDIM0=7
-C         #   GLOBAL G-VALUES
-              STAT_VAR(1:2)=1.D0
-C         #   NSS: NUMBER OF ACTIVATED SLIP SYSTEMS
-              NSS=1
-              STAT_VAR(3)= NSS
-C         #   PLASTIC STRAIN: PLAS
-              DO I=1,NDIM3
-                  STAT_VAR(3+I)=0.D0
-              END DO
-C         [2] LOCAL STATE VARIABLES
-              CALL DEVIATORIC(STRESS, DEV_SIG)
-              CALL NORM_HAH(DEV_SIG, DEV_H0)
-              DO N=1, NSS
-                  NDIM =3+NDIM3+(N-1)*(NDIM5+NDIM4+2)
-                  NDIM0=7+3+6+(N-1)*(NDIM5+6+2) ! 16+X
-C         #   LOCAL G-VALUES
-                  DO I=1,NDIM5
-                      STAT_VAR(NDIM+I)=1.D0
-                  END DO
-C         #   LOCAL MICROSTRUCTURE DEVIATOR
-                  DO I=1,NDIM4
-                      STAT_VAR(NDIM+NDIM5+I)=DEV_H0(I)
-                  END DO
-C         #   LOCAL EQUIVALENT PLASTIC STRAIN
-                  STAT_VAR(NDIM+NDIM5+NDIM4+1)=0.D0
-C         #   LOCAL STRAIN PATH CHANGE PARAMETER
-                  STAT_VAR(NDIM+NDIM5+NDIM4+2)=1.D0
-              END DO
-          END IF
-      ELSE
-          IF(HARD_PAR .EQ. 1.D0) THEN     ! CHABOCHE
-              NDIM0=6
-              DO I=1, NDIM3
-                  STAT_VAR(I)=STATEV(NDIM0+I)
-              END DO
-          ELSEIF(HARD_PAR .EQ. 2.D0) THEN ! YOSHIDA-UEMORI
-              NDIM0=6
-              DO I=1, NDIM3
-                  STAT_VAR(I)=STATEV(NDIM0+I)
-                  STAT_VAR(NDIM3+I)=STATEV(NDIM0+6+I)
-                  STAT_VAR(2*NDIM3+I)=STATEV(NDIM0+12+I)
-              END DO
-              STAT_VAR(3*NDIM3+1)=STATEV(NDIM0+18+1)
-          ELSEIF(HARD_PAR .EQ. 3.D0) THEN ! HAH11
-              NDIM0=7
-C         #   G-VALUES
-              STAT_VAR(1:NDIM5)=STATEV(NDIM0+1:NDIM0+NDIM5)
-C         #   DEV_H
-              DO I=1, NDIM4
-                  STAT_VAR(NDIM5+I)=STATEV(NDIM0+NDIM5+I)
-              END DO
-          ELSEIF(HARD_PAR .EQ. 4.D0) THEN ! HAH14
-              NDIM0=7
-C         #   G-VALUES
-              STAT_VAR(1:NDIM5)=STATEV(NDIM0+1:NDIM0+NDIM5)
-C         #   DEV_H
-              DO I=1, NDIM4
-                  STAT_VAR(NDIM5+I)=STATEV(NDIM0+NDIM5+I)
-              END DO
-          ELSEIF(FLOOR(HARD_PAR) .EQ. 5.D0) THEN ! HAH20
-              NDIM0=7
-C         #   G-VALUES
-              STAT_VAR(1:NDIM5)= STATEV(NDIM0+1:NDIM0+NDIM5)
-              DO I=1, NDIM4
-C         #   DEV_H
-                  STAT_VAR(NDIM5+I)=STATEV(NDIM0+NDIM5+I)
-C         #   DEV_HP
-                  STAT_VAR(NDIM5+NDIM4+I)=STATEV(NDIM0+NDIM5+6+I)
-C         #   DEV_HS
-                  STAT_VAR(NDIM5+2*NDIM4+I)=STATEV(NDIM0+NDIM5+12+I)
-              END DO
-          ELSEIF(FLOOR(HARD_PAR) .EQ. 6.D0) THEN ! HEXAH
-C         [1] GLOBAL STATE VARIABLES
-              NDIM0=7
-C         #   GLOBAL G-VALUES
-              STAT_VAR(1:2)=STATEV(NDIM0+1:NDIM0+2)
-C         #   NSS: NUMBER OF ACTIVATED SLIP SYSTEMS
-              STAT_VAR(3)= STATEV(NDIM0+3)
-              NSS=IDINT(STAT_VAR(3))
-C         #   PLASTIC STRAIN: PLAS
-              DO I=1,NDIM3
-                  STAT_VAR(3+I)=STATEV(NDIM0+3+I)
-              END DO
-C         [2] LOCAL STATE VARIABLES
-              DO N=1, NSS
-                  NDIM =3+NDIM3+(N-1)*(NDIM5+NDIM4+2)
-                  NDIM0=7+3+6+(N-1)*(NDIM5+6+2) ! 16+X
-C         #   LOCAL G-VALUES
-                  DO I=1,NDIM5
-                      STAT_VAR(NDIM+I)=STATEV(NDIM0+I)
-                  END DO
-C         #   LOCAL MICROSTRUCTURE DEVIATOR
-                  DO I=1,NDIM4
-                      STAT_VAR(NDIM+NDIM5+I)=STATEV(NDIM0+NDIM5+I)
-                  END DO
-C         #   LOCAL EQUIVALENT PLASTIC STRAIN
-                  STAT_VAR(NDIM+NDIM5+NDIM4+1)=STATEV(NDIM0+NDIM5+6+1)
-C         #   LOCAL STRAIN PATH CHANGE PARAMETER
-                  STAT_VAR(NDIM+NDIM5+NDIM4+2)=STATEV(NDIM0+NDIM5+6+2)
-              END DO
-          END IF
-      END IF
-C     [4] READ STATE VARIABLES OF DISLOCATION-BASED HARDENING MODEL
-      IF(EQPLAS .EQ. 0.D0) THEN
-          IF(FLOW_PAR .EQ. 7.D0) THEN ! RGBV
-              RHO0=P10
-              STAT_VAR(NDIM6-NDIM7+1)=RHO0 !RHO_F
-              STAT_VAR(NDIM6-NDIM7+2)=0.D0 !RHO_R1
-              STAT_VAR(NDIM6-NDIM7+3)=0.D0 !RHO_R2
-              STAT_VAR(NDIM6-NDIM7+4)=0.D0 !RHO_L
-              STAT_VAR(NDIM6-NDIM7+5)=RHO0 !RHO_F01
-              STAT_VAR(NDIM6-NDIM7+6)=RHO0 !RHO_F02
-              STAT_VAR(NDIM6-NDIM7+7)=RHO0 !RHO_TOT
-              STAT_VAR(NDIM6-NDIM7+8)=0.D0 !DRDE
-              STAT_VAR(NDIM6-NDIM7+9)=0.D0 !RHO_RTOT (TEMPORARY)
-          END IF
-      ELSE
-          IF(FLOW_PAR .EQ. 7.D0) THEN ! RGBV
-              DO I=1, NDIM7
-                  STAT_VAR(NDIM6-NDIM7+I)=STATEV(49+I)
-              END DO
-          END IF
-      END IF
+      CALL READ_STATEV(STATEV, STAT_VAR, STRESS)
 C-----------------------------------------------------------------------
 C     1.6.    YIELD CONDITION
+C
+C     [0]     FLAG
+      CALL DOUBLE_DOT(DSTRAN,DSTRAN,NDIM3,FLAG)
 C
 C     [1]     RELATIVE STRESS=STRESS-BACKSTRESS
       IF(HARD_PAR.EQ.1.D0 .OR. HARD_PAR.EQ.2.D0) THEN
@@ -735,27 +536,27 @@ C     [1]     RELATIVE STRESS=STRESS-BACKSTRESS
           END DO
       END IF
 C     [2]     RESIDUAL FUNCTION VALUE
-      CALL YIELD_CONDITION(STAT_VAR, EQPLAS, STRESS, FVAL)
+      CALL YIELD_CONDITION(STAT_VAR, EPLAS, STRESS, FVAL)
 C-----------------------------------------------------------------------
 C     1.7     STRESS UPDATE METHOD
 C
 C     [1]     PLASTIC CORRECTOR
       ITER=0
       STATE=0.D0
-      IF(FVAL .GE. 1.D-6) THEN
+      IF(FLAG.NE.0.D0 .AND. FVAL.GE.1.D-5) THEN
           STATE=1.D0
-          IF(SUA_PAR .GE. 0.D0) THEN
-              CALL STRESS_UPDATE  ! ITERATIVE STRESS UPDATE METHOD
-     1                   (STAT_VAR,EQPLAS,STRESS,DDSDDE,ITER)
-          ELSE
-              CALL STRESS_UPDATE2 ! NON-ITERATIVE STRESS UPDATE METHOD
-     1                   (STAT_VAR,DSTRAN,D_EQPLAS,EQPLAS,STRESS,DDSDDE)
+          IF(SUA_PAR .GE. 0.D0) THEN  ! ITERATIVE STRESS UPDATE METHOD
+            CALL UPDATE_SIG(STAT_VAR,EPLAS,STRESS,DDSDDE,ITER)
+          ELSE  ! NON-ITERATIVE STRESS UPDATE METHOD
+            ITER=1
+            CALL UPDATE_SIG2(STAT_VAR,DSTRAN,DEPLAS,EPLAS,STRESS,DDSDDE)
           END IF
       END IF
 C     [2]     EFFFECTIVE STRESS
       CALL EFF_SIG(STAT_VAR, STRESS, SIG_BAR)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     [3]     GRADIENT OF YIELD SURFACE
-      CALL GRAD(2,1,STAT_VAR,STRESS,DFDS,DDFDDS)
+      CALL GRAD(1,1,STAT_VAR,STRESS,DFDS,DDFDDS)
 C     [4]     STRESS=STRESS+BACKSTRESS
       IF(HARD_PAR.EQ.1.D0 .OR. HARD_PAR.EQ.2.D0) THEN
           DO I=1, NDIM3
@@ -764,145 +565,31 @@ C     [4]     STRESS=STRESS+BACKSTRESS
       END IF
 C     RETURN:
 C             (1) STRESS  : UPDATED STRESS TENSOR
-C             (2) EQPLAS  : EQUIVALENT PLASTIC STRAIN
+C             (2) EPLAS  : EQUIVALENT PLASTIC STRAIN
 C             (3) STAT_VAR: STATE VARIABLES
 C             (3) DFDS    : YIELD SURFACE GRADIENT
 C             (4) DDSDDE  : ELASTOPLASTIC TANGENT MODLUI
 C-----------------------------------------------------------------------
 C     1.8     UPDATE STATE VARIABLES
-C     [1]     EFFECTIVE PLASTIC STRAIN
-      D_EQPLAS=EQPLAS-STATEV(1)
-      STATEV(1)=EQPLAS
-C     [2]     EFFECTIVE STRESS
-      STATEV(2)=SIG_BAR
-C     [3]     CHORD MODULUS
-      STATEV(3)=EMOD0-(EMOD0-EMOD_A)*(1.D0-DEXP(-EMOD_B*EQPLAS))
-C     [4]     DEFORMATION STATE
-      STATEV(4)=STATE
+C     [1]     EFFECTIVE PLASTIC STRAIN INCREMENT
+      DEPLAS=EPLAS-STATEV(2)
+      STATEV(1)=DEPLAS
+C     [2]     EFFECTIVE PLASTIC STRAIN
+      STATEV(2)=EPLAS
+C     [3]     EFFECTIVE STRESS
+      STATEV(3)=SIG_BAR
+C     [4]     FLOW STRESS
+      STATEV(4)=FLOW_SIG
 C     [5]     ALGORITHMIC ITERATION
       STATEV(5)=ITER
-C     [6]     EFFECTIVE PLASTIC STRAIN INCREMENT
-      STATEV(6)=D_EQPLAS
-C     [7]     STATE VARIALBES OF ANISOTROPIC HARDENING MODELS
-      IF(HARD_PAR .EQ. 1.D0) THEN ! CHABOCHE
-          NDIM0=6
-C         #STATEV(7:12)    : ALPHA
-          DO I=1, NDIM3
-              STATEV(NDIM0+I)= STAT_VAR(I)
-          END DO
-      ELSEIF(HARD_PAR .EQ. 2.D0) THEN ! YOSHIDA-UEMORI
-          NDIM0=6
-C         #STATEV(7:12)    : ALPHA
-C         #STATEV(13:18)   : BETA
-C         #STATEV(19:24)   : Q
-C         #STATEV(25)      : R
-C         #STATEV(26)      : STAG_R
-          DO I=1, NDIM3
-              STATEV(NDIM0+I)=STAT_VAR(I)
-              STATEV(NDIM0+6+I)=STAT_VAR(NDIM3+I)
-              STATEV(NDIM0+12+I)=STAT_VAR(2*NDIM3+I)
-          END DO
-          STATEV(NDIM0+18+1)=STAT_VAR(3*NDIM3+1)
-      ELSEIF(HARD_PAR .EQ. 3.D0) THEN ! HAH11
-          NDIM0=7
-C         #STATEV(7)      : COS_X
-          CALL COSX(STAT_VAR,STRESS,COS_X)
-          STATEV(NDIM0)= COS_X
-C         #STATEV(8:11)    : G-VALUES
-          DO I=1, NDIM5
-              STATEV(NDIM0+I)=STAT_VAR(I)
-          END DO
-C         #STATEV(12:17)  : DEV_H
-          DO I=1, NDIM4
-              STATEV(NDIM0+NDIM5+I)=STAT_VAR(NDIM5+I)
-          END DO
-      ELSEIF(HARD_PAR .EQ. 4.D0) THEN ! HAH14
-          NDIM0=7
-C         #STATEV(7)      : COS_X
-          CALL COSX(STAT_VAR,STRESS,COS_X)
-          STATEV(NDIM0)= COS_X
-C         #STATEV(8:13)    : G-VALUES
-          DO I=1, NDIM5
-              STATEV(NDIM0+I)=STAT_VAR(I)
-          END DO
-C         #STATEV(14:19)  : DEV_H
-          DO I=1, NDIM4
-              STATEV(NDIM0+NDIM5+I)=STAT_VAR(NDIM5+I)
-          END DO
-      ELSEIF(FLOOR(HARD_PAR) .EQ. 5.D0) THEN ! HAH20
-          NDIM0=7
-C         #STATEV(7)      : COS_X
-          CALL COSX(STAT_VAR,STRESS,COS_X)
-          STATEV(NDIM0)= COS_X
-C         #STATEV(8:17)   : G-VALUES
-          DO I=1, NDIM5
-              STATEV(NDIM0+I)=STAT_VAR(I)
-          END DO
-C         #STATEV(18:23)  : DEV_H
-C         #STATEV(24:29)  : DEV_HP
-C         #STATEV(30:35)  : DEV_HS
-          DO I=1, NDIM4
-              STATEV(17+I)=STAT_VAR(NDIM5+I)
-              STATEV(23+I)=STAT_VAR(NDIM5+NDIM4+I)
-              STATEV(29+I)=STAT_VAR(NDIM5+2*NDIM4+I)
-          END DO
-      ELSEIF(FLOOR(HARD_PAR) .EQ. 6.D0) THEN ! HEXAH
-          NDIM0=7
-C         #STATEV(7)      : COS_X
-          CALL COSX(STAT_VAR,STRESS,COS_X)
-          STATEV(NDIM0)= COS_X
-C         [1] GLOBAL STATE VARIABLES
-C         #   GLOBAL G-VALUES: GP/GL
-          STATEV(NDIM0+1:NDIM0+2)=STAT_VAR(1:2)
-C         #   NSS: NUMBER OF ACTIVATED SLIP SYSTEMS
-          STATEV(NDIM0+3)=STAT_VAR(3)
-          NSS=IDINT(STAT_VAR(3))
-C         #   PLASTIC STRAIN: PLAS=PLAS+D_EQPLAS*DFDS
-          DO I=1,NDIM3
-              STATEV(NDIM0+3+I)=STAT_VAR(3+I)
-          END DO
-C         [2] LOCAL STATE VARIABLES
-          DO N=1, NSS
-              NDIM =NDIM3+3+(N-1)*(NDIM5+NDIM4+2)
-              NDIM0=7+3+6+(N-1)*(NDIM5+6+2)
-C         #   LOCAL G-VALUES
-              DO I=1,NDIM5
-                  STATEV(NDIM0+I)=STAT_VAR(NDIM+I)
-              END DO
-C         #   LOCAL MICROSTRUCTURE DEVIATOR
-              DO I=1,NDIM4
-                  STATEV(NDIM0+NDIM5+I)=STAT_VAR(NDIM+NDIM5+I)
-              END DO
-C         #   LOCAL EQUIVALENT PLASTIC STRAIN
-              STATEV(NDIM0+NDIM5+6+1)=STAT_VAR(NDIM+NDIM5+NDIM4+1)
-C         #   LOCAL STRAIN PATH CHANGE PARAMETER
-              STATEV(NDIM0+NDIM5+6+2)=STAT_VAR(NDIM+NDIM5+NDIM4+2)
-          END DO
-      ELSEIF(HARD_PAR .EQ. 0.D0) THEN ! ISOTROPIC HARDENING
-          STATEV(7:49)=0.D0
-      END IF
-C     [8]     STATE VARIALBES OF DISLOACTION HARDENING MODELS
-      IF(FLOW_PAR .EQ. 7.D0) THEN
-C         # STATE VARIABLE OF RGBV #
-C         STATEV(50): RHO_F
-C         STATEV(51): RHO_R1
-C         STATEV(52): RHO_R2
-C         STATEV(53): RHO_L
-C         STATEV(54): RHO_F01
-C         STATEV(55): RHO_F02
-C         STATEV(56): RHO_TOT
-C         STATEV(57): DRDE
-C         STATEV(58): RHO_RTOT
-          DO I=1,NDIM7
-              STATEV(50+I)=STAT_VAR(NDIM6-NDIM7+I)
-          END DO
-      END IF
 C     [9]     GRADIENT OF YIELD SURFACE
       DO I=1, NDIM3
-          STATEV(58+I)=DFDS(I)
+          STATEV(5+I)=DFDS(I)
       END DO
+C     [10]    WRITE HARDENING STATE VARIABLES
+      CALL WRITE_STATEV(STATEV, STAT_VAR, STRESS)
 
-      DEALLOCATE(DEV_H0, DEV_SIG, STAT_VAR)
+      DEALLOCATE(STAT_VAR)
       RETURN
       END SUBROUTINE UMAT
 C-----------------------------------------------------------------------
@@ -911,7 +598,7 @@ C                                                                      C
 C     SUB.2   STRESS UPDATE ALGORITHMS                                 C
 C                                                                      C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-      SUBROUTINE STRESS_UPDATE(STAT_VAR,EQPLAS,SIG,CE,ITER)
+      SUBROUTINE UPDATE_SIG(STAT_VAR,EPLAS,SIG,CE,ITER)
 C     # THE SUBROUTINES NUMERICALLY INTEGRATE THE STRESS TENSOR THROUGH
 C       THE INDIRECT METHOD.
       IMPLICIT REAL*8(A-H, O-Z)
@@ -922,24 +609,24 @@ C       THE INDIRECT METHOD.
       COMMON /KITER/ MAX_ITER
 
 C     [1] MAXIMUM ITERATION
-      MAX_ITER=200
+      MAX_ITER=100
 C     [2] SELECTION OF STRESS UPDATE ALGORITHM
       IF(FLOOR(SUA_PAR) .EQ. 1.D0) THEN
-          CALL CPM(STAT_VAR,EQPLAS,SIG,CE,ITER)
+          CALL CPM(STAT_VAR,EPLAS,SIG,CE,ITER)
       ELSEIF(FLOOR(SUA_PAR) .EQ. 2.D0) THEN
-          CALL CPPM(STAT_VAR,EQPLAS,SIG,CE,ITER)
+          CALL CPPM(STAT_VAR,EPLAS,SIG,CE,ITER)
       ELSEIF(FLOOR(SUA_PAR) .EQ. 3.D0) THEN
-          CALL CPPM2(STAT_VAR,EQPLAS,SIG,CE,ITER)
+          CALL CPPM2(STAT_VAR,EPLAS,SIG,CE,ITER)
       ELSEIF(FLOOR(SUA_PAR) .EQ. 4.D0) THEN
-          CALL TMM(STAT_VAR,EQPLAS,SIG,CE,ITER)
+          CALL TMM(STAT_VAR,EPLAS,SIG,CE,ITER)
       ELSEIF(FLOOR(SUA_PAR) .EQ. 5.D0) THEN
-C          CALL BROYDEN(STAT_VAR,EQPLAS,SIG,CE,ITER)
+C          CALL BROYDEN(STAT_VAR,EPLAS,SIG,CE,ITER)
       END IF
 
       RETURN
-      END SUBROUTINE STRESS_UPDATE
+      END SUBROUTINE UPDATE_SIG
 C-----------------------------------------------------------------------
-      SUBROUTINE STRESS_UPDATE2(STAT_VAR,DSTRAN,D_EQPLAS,EQPLAS,SIG,CE)
+      SUBROUTINE UPDATE_SIG2(STAT_VAR,DSTRAN,DEPLAS,EPLAS,SIG,CE)
 C     # THE SUBROUTINES NUMERICALLY INTEGRATE THE STRESS TENSOR THROUGH
 C       THE INDIRECT METHOD.
       IMPLICIT REAL*8(A-H, O-Z)
@@ -955,18 +642,18 @@ C     [1] ORIGINAL STRESS TENSOR AT THE PREVIOUS DEFORMATION STEP
 C-----------------------------------------------------------------------
 C     [2] NON-ITERATIVE STRESS INTEGRATION METHOD
       IF(SUA_PAR .EQ. -1.D0) THEN
-          CALL FOEFM(STAT_VAR,DSTRAN,D_EQPLAS,EQPLAS,SIG,CE)
+          CALL FOEFM(STAT_VAR,DSTRAN,DEPLAS,EPLAS,SIG,CE)
       ELSEIF(SUA_PAR .EQ. -2.D0) THEN
-          CALL NSPM(STAT_VAR,DSTRAN,D_EQPLAS,EQPLAS,SIG,CE)
+          CALL NSPM(STAT_VAR,DSTRAN,DEPLAS,EPLAS,SIG,CE)
       ELSEIF(SUA_PAR .EQ. -3.D0) THEN
-          CALL NSPM2(STAT_VAR,DSTRAN,D_EQPLAS,EQPLAS,SIG,CE)
+          CALL NSPM2(STAT_VAR,DSTRAN,DEPLAS,EPLAS,SIG,CE)
       END IF
 
       RETURN
-      END SUBROUTINE STRESS_UPDATE2
+      END SUBROUTINE UPDATE_SIG2
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CPM(STAT_VAR,EQPLAS,SIG,CE,ITER)
+      SUBROUTINE CPM(STAT_VAR,EPLAS,SIG,CE,ITER)
 C     EULER FORWARD METHOD= CUTTING PLANE METHOD (EXPLICIT SCHEME)#
 C     REF: [4] J.W. LEE ET AL. IJP  (2012): CUTTING PLANE METHOD  #
       IMPLICIT REAL*8(A-H, O-Z)
@@ -984,10 +671,10 @@ C     REF: [4] J.W. LEE ET AL. IJP  (2012): CUTTING PLANE METHOD  #
 C-----------------------------------------------------------------------
 C     1.0     INITIALIZATION
 C     ¥Å_BAR(0, N+1) = ¥Å_BAR(N)
-      EQPLAS_K = EQPLAS
+      EPLAS_K = EPLAS
 C     SIG(0, N+1) = SIG_TRIAL(N+1)
       SIG_K = SIG
-      DEL_EQPLAS=0.D0
+      DEL_EPLAS=0.D0
       DEL_SIG=0.D0
 C     LINE-SEARCH
       ALPHA=1.D0
@@ -1007,7 +694,7 @@ C     1.2     EFFECTIVE STRESS & FLOW STRESS
 C     [1] EFFECTIVE STRESS
       CALL EFF_SIG(STAT_VAR, SIG_K, SIG_BAR_K)
 C     [2] FLOW STRESS
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS_K, FLOW_SIG_K, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS_K, FLOW_SIG_K, DHDE)
 C     1.3    RESIDUAL FUNCTION: YIELD CONDITION
       R2=SIG_BAR_K-FLOW_SIG_K
       IF(ITER.EQ.0) R0=R2
@@ -1033,7 +720,7 @@ C     [1]     DFDS_C_DFDS
       END DO
       END DO
 C     [2]     KINEMATIC COMPONENTS: DSDE & DDFDEDS
-      CALL KINEMATIC_COMPONENT(STAT_VAR,EQPLAS_K,SIG_K,DSDE,DDFDEDS)
+      CALL KINEMATIC_COMPONENT(STAT_VAR,EPLAS_K,SIG_K,DSDE,DDFDEDS)
 C     [3]     DENOMINATOR
       XDENOM=DFDS_CE_DFDS-DSDE+DHDE
 C-----------------------------------------------------------------------
@@ -1046,17 +733,17 @@ C     1.6     STEP-SIZE CONTROL
 C-----------------------------------------------------------------------
 C     1.7     STEP SIZE OF SOLUTION VARIABLE INCREMENTS
 C     [1]     EQUIVALENT PLASTIC STRAIN
-      DEL_EQPLAS=ALPHA*VAL
+      DEL_EPLAS=ALPHA*VAL
 C     [2]     STRESS
-      DEL_SIG= MATMUL(-CE,DFDS*DEL_EQPLAS)
+      DEL_SIG= MATMUL(-CE,DFDS*DEL_EPLAS)
 C     1.8     INTEGRATE SOLUTION VARIABLES
 C     [1]     EQUIVALENT PLASTIC STRAIN
-      EQPLAS_K=EQPLAS_K+DEL_EQPLAS
+      EPLAS_K=EPLAS_K+DEL_EPLAS
 C     [2]     STRESS TENSOR
       SIG_K=SIG_K+DEL_SIG
 C     1.9     UPDATE STATE VARIALBES OF HARDENING MODELS
       IF(DABS(UDT_PAR-0.D0) .LT. TOL) THEN
-          CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS_K, SIG_K, DEL_EQPLAS)
+          CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS_K, SIG_K, DEL_EPLAS)
       END IF
       ITER=ITER+1
       GOTO 210
@@ -1064,17 +751,17 @@ C-----------------------------------------------------------------------
 215   CONTINUE
 C     1.10    UPDATE SOLUTION VARIABLES
 C     [0]     EQUIVALENT STRAIN INCREMENT
-      D_EQPLAS=EQPLAS_K-EQPLAS
+      DEPLAS=EPLAS_K-EPLAS
 C     [1]     EQUIVALENT STRAIN: E_BAR(N+1)= E_BAR(K+1)
-      EQPLAS=EQPLAS_K
+      EPLAS=EPLAS_K
 C     [2]     STRESS: SIG(N+1)= SIG(K+1)
       SIG=SIG_K
 C     1.11    UPDATE STATE VARIABLES OF HARDENING MODELS II
       IF(DABS(UDT_PAR-5.D0) .LT. TOL) THEN
-          CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS, SIG, D_EQPLAS)
+          CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS, SIG, DEPLAS)
       END IF
 C     1.12    CONTINUUM TANGENT MODULUS
-      CALL CONTINUUM(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      CALL CONTINUUM(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
       CE=CEP
 
       RETURN
@@ -1082,7 +769,7 @@ C     1.12    CONTINUUM TANGENT MODULUS
 C-----------------------------------------------------------------------
 C
 C     EULER BACKWARD METHOD= CLOSETST POINT PROJECTION METHOD (FULLY IMPLICIT)
-      SUBROUTINE CPPM(STAT_VAR,EQPLAS,SIG,CE,ITER)
+      SUBROUTINE CPPM(STAT_VAR,EPLAS,SIG,CE,ITER)
       IMPLICIT REAL*8(A-H, O-Z)
 
       DIMENSION STAT_VAR(NDIM6), SIG(NDIM3), CE(NDIM3,NDIM3)
@@ -1101,11 +788,11 @@ C     EULER BACKWARD METHOD= CLOSETST POINT PROJECTION METHOD (FULLY IMPLICIT)
 C-----------------------------------------------------------------------
 C     2.0     INITIALIZATION
       SIG_K       = SIG
-      EQPLAS_K    = EQPLAS
+      EPLAS_K    = EPLAS
       D_SIG       = 0.D0
-      D_EQPLAS    = 0.D0
+      DEPLAS    = 0.D0
       D_PLAS      = 0.D0
-      DEL_EQPLAS  = 0.D0
+      DEL_EPLAS  = 0.D0
       DEL_SIG     = 0.D0
 C     LINE-SEARCH
       ALPHA=1.D0
@@ -1125,12 +812,12 @@ C     2.2     EFFECTIVE STRESS & FLOW STRESS
 C     [1] EFFECTIVE STRESS
       CALL EFF_SIG(STAT_VAR, SIG_K, SIG_BAR_K)
 C     [2] FLOW STRESS
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS_K, FLOW_SIG_K, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS_K, FLOW_SIG_K, DHDE)
 C     2.3     RESIDUAL FUNCTIONS
 C     [1]     ASSOCIATED FLOW RULE
       R1_NORM=0.D0
       DO I=1, NDIM3
-          R1(I)= -D_PLAS(I) +D_EQPLAS*DFDS(I) !(1,3)
+          R1(I)= -D_PLAS(I) +DEPLAS*DFDS(I) !(1,3)
           R1_NORM=R1_NORM+R1(I)**2
       END DO
       R1_NORM=DSQRT(R1_NORM)
@@ -1156,13 +843,13 @@ C     [1]     ELASTIC COMPLIANCE TENSOR
 C     [2]     DR1DS: INVERSE HESSIAN MATRIX
       DO I=1, NDIM3
       DO J=1, NDIM3
-          DR1DS(I,J)= SE(I,J)+D_EQPLAS*DDFDDS(I,J)
+          DR1DS(I,J)= SE(I,J)+DEPLAS*DDFDDS(I,J)
       END DO
       END DO
 C     [3]     KINEMATIC COMPONENTS: DSDE & DDFDEDS
-      CALL KINEMATIC_COMPONENT(STAT_VAR,EQPLAS_K,SIG_K,DSDE,DDFDEDS)
+      CALL KINEMATIC_COMPONENT(STAT_VAR,EPLAS_K,SIG_K,DSDE,DDFDEDS)
 C     [4]     DR1DE: XK
-      DR1DE=D_EQPLAS*DDFDEDS+DFDS
+      DR1DE=DEPLAS*DDFDEDS+DFDS
 C-----------------------------------------------------------------------
 C     2.6     JACOBIAN MATRIX
 C     NOTE: DR2DS=DFDS & DR2DE=DFDE=DSDE-DHDE
@@ -1192,24 +879,24 @@ C     2.8     STEP-SIZE CONTROL
 C-----------------------------------------------------------------------
 C     2.9     STEP-SIZE OF SOLUTION VARIABLE INCREMENTS
 C     [1]     EQUIVLANET PLASTIC STRAIN
-      DEL_EQPLAS=ALPHA*VAL
+      DEL_EPLAS=ALPHA*VAL
 C     [2]     STRES
       DEL_SIG(1:NDIM3)=ALPHA*XRHS(1:NDIM3)
 C     2.10    INCREMENT AT A TIME-STEP
 C     [1]     PLASTIC CORRECTOR AT A TIME-STEP
       D_SIG=D_SIG+DEL_SIG
 C     [2]     EQUIVALENT PALSTIC STRAIN INCREMENT AT A TIME-STEP
-      D_EQPLAS=D_EQPLAS+DEL_EQPLAS
+      DEPLAS=DEPLAS+DEL_EPLAS
 C     [3]    PLASTIC STRAIN INCREMENT AT A TIME-STEP
       D_PLAS=MATMUL(-SE,D_SIG)
 C     2.11    INTEGRATE SOLUTION VARIALBES
 C     [1]     STRESS
       SIG_K=SIG_K+DEL_SIG
 C     [2]     EQUIVALENT STRAIN
-      EQPLAS_K=EQPLAS_K+DEL_EQPLAS
+      EPLAS_K=EPLAS_K+DEL_EPLAS
 C     2.12    UPDATE STATE VARIALBES OF HARDENING MODELS
       IF(DABS(UDT_PAR-0.D0) .LT. TOL) THEN
-          CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS_K, SIG_K, DEL_EQPLAS)
+          CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS_K, SIG_K, DEL_EPLAS)
       END IF
       ITER=ITER+1
       GOTO 220
@@ -1217,17 +904,17 @@ C-----------------------------------------------------------------------
 225   CONTINUE
 C     2.13    UPDATE SOLUTION VARIABLES
 C     [0]     EQUIVALENT STRAIN INCREMENT
-      D_EQPLAS=EQPLAS_K-EQPLAS
+      DEPLAS=EPLAS_K-EPLAS
 C     [1]     EQUIVALENT STRAIN: E_BAR(N+1)= E_BAR(K+1)
-      EQPLAS=EQPLAS_K
+      EPLAS=EPLAS_K
 C     [2]     STRESS: SIG(N+1)= SIG(K+1)
       SIG=SIG_K
 C     2.14    INTEGRATE STATE VARIABLES OF HARDENING MODELS II
       IF(DABS(UDT_PAR-5.D0) .LT. TOL) THEN
-          CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS, SIG, D_EQPLAS)
+          CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS, SIG, DEPLAS)
       END IF
 C     2.15    CONSISTENT TANGENT MODULUS
-      CALL CONSISTENT(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      CALL CONSISTENT(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
       CE=CEP
 
       RETURN
@@ -1235,7 +922,7 @@ C     2.15    CONSISTENT TANGENT MODULUS
 C-----------------------------------------------------------------------
 C
 C     EULER BACKWARD METHOD= CLOSETST POINT PROJECTION METHOD (SEMI-IMPLICIT)
-      SUBROUTINE CPPM2(STAT_VAR,EQPLAS,SIG,CE,ITER)
+      SUBROUTINE CPPM2(STAT_VAR,EPLAS,SIG,CE,ITER)
       IMPLICIT REAL*8(A-H, O-Z)
 
       DIMENSION STAT_VAR(NDIM6), SIG(NDIM3), CE(NDIM3,NDIM3)
@@ -1253,11 +940,11 @@ C     EULER BACKWARD METHOD= CLOSETST POINT PROJECTION METHOD (SEMI-IMPLICIT)
 C-----------------------------------------------------------------------
 C     3.0     INITIALIZATION
       SIG_K       = SIG
-      EQPLAS_K    = EQPLAS
+      EPLAS_K    = EPLAS
       D_SIG       = 0.D0
-      D_EQPLAS    = 0.D0
+      DEPLAS    = 0.D0
       D_PLAS      = 0.D0
-      DEL_EQPLAS  = 0.D0
+      DEL_EPLAS  = 0.D0
       DEL_SIG     = 0.D0
 C     LINE-SEARCH
       ALPHA=1.D0
@@ -1277,12 +964,12 @@ C     3.2     EFFECTIVE STRESS & FLOW STRESS
 C     [1] EFFECTIVE STRESS
       CALL EFF_SIG(STAT_VAR, SIG_K, SIG_BAR_K)
 C     [2] FLOW STRESS
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS_K, FLOW_SIG_K, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS_K, FLOW_SIG_K, DHDE)
 C     3.3     RESIDUAL FUNCTIONS
 C     [1]     ASSOCIATED FLOW RULE
       R1_NORM=0.D0
       DO I=1, NDIM3
-          R1(I)= -D_PLAS(I) +D_EQPLAS*DFDS(I) !(1,3)
+          R1(I)= -D_PLAS(I) +DEPLAS*DFDS(I) !(1,3)
           R1_NORM=R1_NORM+R1(I)**2
       END DO
       R1_NORM=DSQRT(R1_NORM)
@@ -1308,13 +995,13 @@ C     [1]     ELASTIC COMPLIANCE TENSOR
 C     [2]     DR1DS=XHI: INVERSE HESSIAN MATRIX
       DO I=1, NDIM3
       DO J=1, NDIM3
-          XHI(I,J)= SE(I,J)+D_EQPLAS*DDFDDS(I,J)
+          XHI(I,J)= SE(I,J)+DEPLAS*DDFDDS(I,J)
       END DO
       END DO
 C     [3]     KINEMATIC COMPONENTS: DSDE & DDFDEDS
-      CALL KINEMATIC_COMPONENT(STAT_VAR,EQPLAS_K,SIG_K,DSDE,DDFDEDS)
+      CALL KINEMATIC_COMPONENT(STAT_VAR,EPLAS_K,SIG_K,DSDE,DDFDEDS)
 C     [4]     DR1DE: XK
-      DR1DE=D_EQPLAS*DDFDEDS+DFDS
+      DR1DE=DEPLAS*DDFDEDS+DFDS
 C-----------------------------------------------------------------------
 C     3.6     DENOMINATOR AND NUMERATOR
 C     [1]     HESSIAN MATRIX: XH=DR1DSI
@@ -1346,12 +1033,12 @@ C     3.7     STEP-SIZE CONTROL
 C-----------------------------------------------------------------------
 C     3.8     STEP-SIZE OF SOLUTION VARIABLE INCREMENTS AT A SUB-STEP
 C     [1]     EQUIVALENT PLASTIC STRAIN
-      DEL_EQPLAS= ALPHA*VAL
+      DEL_EPLAS= ALPHA*VAL
 C     [2]     STRESS
-      DEL_SIG= MATMUL(-XH,R1+DR1DE*DEL_EQPLAS)
+      DEL_SIG= MATMUL(-XH,R1+DR1DE*DEL_EPLAS)
 C     3.9     INCREMENTS AT A TIME-STEP
 C     [1]     EQUIVALENT PALSTIC STRAIN INCREMENT AT A TIME-STEP
-      D_EQPLAS=D_EQPLAS+DEL_EQPLAS
+      DEPLAS=DEPLAS+DEL_EPLAS
 C     [2]     PLASTIC CORRECTOR AT A TIME-STEP
       D_SIG=D_SIG+DEL_SIG
 C     [3]    PLASTIC STRAIN INCREMENT AT A TIME-STEP
@@ -1360,10 +1047,10 @@ C     3.10    UPDATE STATE VARIALBES
 C     [1]     STRESS
       SIG_K=SIG_K+DEL_SIG
 C     [2]     EQUIVALENT STRAIN
-      EQPLAS_K=EQPLAS_K+DEL_EQPLAS
+      EPLAS_K=EPLAS_K+DEL_EPLAS
 C     3.11    UPDATE STATE VARIALBES OF HARDENING MODELS
       IF(DABS(UDT_PAR-0.D0) .LT. TOL) THEN
-          CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS_K, SIG_K, DEL_EQPLAS)
+          CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS_K, SIG_K, DEL_EPLAS)
       END IF
 
       ITER=ITER+1
@@ -1372,17 +1059,17 @@ C-----------------------------------------------------------------------
 235   CONTINUE
 C     3.12    UPDATE SOLUTION VARIABLES
 C     [1]     EQUIVALENT STRAIN INCREMENT
-      D_EQPLAS=EQPLAS_K-EQPLAS
+      DEPLAS=EPLAS_K-EPLAS
 C     [2]     EQUIVALENT STRAIN: E_BAR(N+1)= E_BAR(K+1)
-      EQPLAS=EQPLAS_K
+      EPLAS=EPLAS_K
 C     [3]     STRESS: SIG(N+1)= SIG(K+1)
       SIG=SIG_K
 C     3.13    INTEGRATE STATE VARIABLES OF HARDENING MODELS II
       IF(DABS(UDT_PAR-5.D0) .LT. TOL) THEN
-          CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS, SIG, D_EQPLAS)
+          CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS, SIG, DEPLAS)
       END IF
 C     3.14    CONSISTENT TANGENT MODULUS
-      CALL CONSISTENT(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      CALL CONSISTENT(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
       CE=CEP
       
       RETURN
@@ -1391,7 +1078,7 @@ C-----------------------------------------------------------------------
 C
 C     TANGENT MODULUS METHOD (SEMI-IMPLICIT)
 C     REF: [12] M. ORTIZ  ET AL.  IJNME   (1985)
-      SUBROUTINE TMM(STAT_VAR,EQPLAS,SIG,CE,ITER)
+      SUBROUTINE TMM(STAT_VAR,EPLAS,SIG,CE,ITER)
       IMPLICIT REAL*8(A-H, O-Z)
 
       DIMENSION STAT_VAR(NDIM6), SIG(NDIM3), CE(NDIM3,NDIM3)
@@ -1411,11 +1098,11 @@ C     REF: [12] M. ORTIZ  ET AL.  IJNME   (1985)
 C-----------------------------------------------------------------------
 C     4.0     INITIALIZATION
       SIG_K       = SIG
-      EQPLAS_K    = EQPLAS
+      EPLAS_K    = EPLAS
       D_SIG       = 0.D0
-      D_EQPLAS    = 0.D0
+      DEPLAS    = 0.D0
       D_PLAS      = 0.D0
-      DEL_EQPLAS  = 0.D0
+      DEL_EPLAS  = 0.D0
       DEL_SIG     = 0.D0
       DEL_SIG0    = 0.D0
       DEL_SIG1    = 0.D0
@@ -1442,12 +1129,12 @@ C     4.2     EFFECTIVE STRESS & FLOW STRESS
 C     [1] EFFECTIVE STRESS
       CALL EFF_SIG(STAT_VAR, SIG_K, SIG_BAR_K)
 C     [2] FLOW STRESS
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS_K, FLOW_SIG_K, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS_K, FLOW_SIG_K, DHDE)
 C     4.3     RESIDUAL FUNCTIONS
 C     [1]     ASSOCIATED FLOW RULE
       R1_NORM=0.D0
       DO I=1, NDIM3
-          R1(I)= -D_PLAS(I) +D_EQPLAS*DFDS(I) !(1,3)
+          R1(I)= -D_PLAS(I) +DEPLAS*DFDS(I) !(1,3)
           R1_NORM=R1_NORM+R1(I)**2
       END DO
       R1_NORM=DSQRT(R1_NORM)
@@ -1473,15 +1160,15 @@ C     [0]     ELASTIC COMPLIANCE TENSOR
 C     [1]     INVERSE HESSIAN MATRIX: XHI
       DO I=1, NDIM3
       DO J=1, NDIM3
-          XHI(I,J)= SE(I,J)+D_EQPLAS*DDFDDS(I,J)
+          XHI(I,J)= SE(I,J)+DEPLAS*DDFDDS(I,J)
       END DO
       END DO
 C     [2]     HESSIAN MATRIX: XH
       CALL INVERSE(XHI, NDIM3, XH)
 C     [3]     KINEMATIC COMPONENTS: DSDE & DDFDEDS
-      CALL KINEMATIC_COMPONENT(STAT_VAR,EQPLAS_K,SIG_K,DSDE,DDFDEDS)
+      CALL KINEMATIC_COMPONENT(STAT_VAR,EPLAS_K,SIG_K,DSDE,DDFDEDS)
 C     [4]     DR1DE: XK
-      DR1DE=D_EQPLAS*DDFDEDS+DFDS
+      DR1DE=DEPLAS*DDFDEDS+DFDS
 C     [5]     DFDS_XH_DR1DE / DFDS_CE_DFDS
       DFDS_XH_DR1DE=0.D0
       DFDS_CE_DFDS=0.D0
@@ -1513,16 +1200,16 @@ C     4.7     STEP-SIZE CONTROL
 C-----------------------------------------------------------------------
 C     4.8     STEP-SIZE OF SOLUTION VARIABLES AT A SUB-STEP
 C     [1]     EQUIVALENT PLASTIC STRAIN INCREMENT
-C     DEL_EQPLAS(K+1/2)
-      DEL_EQPLAS= ALPHA*VAL
+C     DEL_EPLAS(K+1/2)
+      DEL_EPLAS= ALPHA*VAL
 C     [2]     PLASTIC CORRECTOR INCREMENT
-      DEL_SIG1= MATMUL(-XH,R1+DR1DE*DEL_EQPLAS)
-      DEL_SIG0= MATMUL(-CE,DFDS*DEL_EQPLAS)
+      DEL_SIG1= MATMUL(-XH,R1+DR1DE*DEL_EPLAS)
+      DEL_SIG0= MATMUL(-CE,DFDS*DEL_EPLAS)
       DEL_SIG=TH*DEL_SIG1+(1.D0-TH)*DEL_SIG0
 C-----------------------------------------------------------------------
 C     4.9     SOLUTION VARIABLE INCREMENTS AT A TIME-STEP
 C     [1]     EQUIVALENT PALSTIC STRAIN INCREMENT AT A TIME-STEP
-      D_EQPLAS=D_EQPLAS+DEL_EQPLAS
+      DEPLAS=DEPLAS+DEL_EPLAS
 C     [2]     PLASTIC CORRECTOR AT A TIME-STEP
       D_SIG=D_SIG+DEL_SIG
 C     [3]    PLASTIC STRAIN INCREMENT AT A TIME-STEP
@@ -1532,11 +1219,11 @@ C     4.10    UPDATE STATE VARIALBES
 C     [1]     STRESS
       SIG_K=SIG_K+DEL_SIG
 C     [2]     EQUIVALENT STRAIN
-      EQPLAS_K=EQPLAS_K+DEL_EQPLAS
+      EPLAS_K=EPLAS_K+DEL_EPLAS
 C-----------------------------------------------------------------------
 C     4.11    UPDATE STATE VARIALBES OF HARDENING MODELS
       IF(DABS(UDT_PAR-0.D0) .LT. TOL) THEN
-          CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS_K, SIG_K, DEL_EQPLAS)
+          CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS_K, SIG_K, DEL_EPLAS)
       END IF
 
       ITER=ITER+1
@@ -1545,22 +1232,22 @@ C-----------------------------------------------------------------------
 245   CONTINUE
 C     4.12    UPDATE SOLUTION VARIABLES
 C     [0]     EQUIVALENT STRAIN INCREMENT
-      D_EQPLAS=EQPLAS_K-EQPLAS
+      DEPLAS=EPLAS_K-EPLAS
 C     [1]     EQUIVALENT STRAIN: E_BAR(N+1)= E_BAR(K+1)
-      EQPLAS=EQPLAS_K
+      EPLAS=EPLAS_K
 C     [2]     STRESS: SIG(N+1)= SIG(K+1)
       SIG=SIG_K
 C     4.13    INTEGRATE STATE VARIABLES OF HARDENING MODELS II
       IF(DABS(UDT_PAR-5.D0) .LT. TOL) THEN
-          CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS, SIG, D_EQPLAS)
+          CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS, SIG, DEPLAS)
       END IF
 C     4.14    CONSISTENT TANGENT MODULUS
-      CALL CONSISTENT(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      CALL CONSISTENT(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
 
       RETURN
       END SUBROUTINE TMM
 C-----------------------------------------------------------------------
-      SUBROUTINE LINESEARCH(ALPHA,PSI0,PSIK,R1,R2,CE,ITER,DEL_EQPLAS)
+      SUBROUTINE LINESEARCH(ALPHA,PSI0,PSIK,R1,R2,CE,ITER,DEL_EPLAS)
 C     # THIS SUBROUTINE CONTROLS THE STEP SIZE OF THE SOLUTION VARIABLE
 C       BASED ON THE LINE-SEARCH TECHNIQUE.
 C     REF: [13] W. M. SCHERZINGER  CMAME   (2017)
@@ -1594,7 +1281,7 @@ C     [2] GOLDSTEIN'S CONDITION   [13][EQ. (51)]
               ALPHA1= ALPHA
           END IF
       END IF
-      VAL2=ALPHA*DEL_EQPLAS
+      VAL2=ALPHA*DEL_EPLAS
 C     [3] ADDITIONAL STEP SIZE CONTROL CONDITION
       IF(VAL2.LT.0.D0 .OR. VAL2.GT.EPS_MAX) THEN
 C      IF(DABS(VAL2).GT.EPS_MAX) THEN
@@ -1611,7 +1298,7 @@ C-----------------------------------------------------------------------
 C
 C     THE FIRST-ORDER EULER FORWARD METHOD
 C     REF: F. DUNNE ET AL. (2005)
-      SUBROUTINE FOEFM(STAT_VAR,DSTRAN,D_EQPLAS,EQPLAS,SIG,CE)
+      SUBROUTINE FOEFM(STAT_VAR,DSTRAN,DEPLAS,EPLAS,SIG,CE)
       IMPLICIT REAL*8(A-H, O-Z)
 
       DIMENSION STAT_VAR(NDIM6), DSTRAN(NDIM3), SIG(NDIM3), 
@@ -1632,9 +1319,9 @@ C     1.2     EFFECTIVE STRESS & FLOW STRESS
 C     [1] EFFECTIVE STRESS
       CALL EFF_SIG(STAT_VAR, SIG, SIG_BAR)
 C     [2] FLOW STRESS
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     1.3     KINEMATIC COMPONENT: DFDE, DDFDEDS
-      CALL KINEMATIC_COMPONENT(STAT_VAR,EQPLAS,SIG,DSDE,DDFDEDS)
+      CALL KINEMATIC_COMPONENT(STAT_VAR,EPLAS,SIG,DSDE,DDFDEDS)
 C     1.4     THE INCREMENT OF EFFECTIVE PLASTIC STRAIN
 C     [1]     NUMERATOR
       DFDS_CE_DSTRAN=0.D0
@@ -1652,18 +1339,18 @@ C     [2]   DENOMINATOR
       END DO
       XDENOM=DFDS_CE_DFDS-DSDE+DHDE
 C
-      D_EQPLAS=DFDS_CE_DSTRAN/XDENOM
+      DEPLAS=DFDS_CE_DSTRAN/XDENOM
 C     1.5     THE INCREMENT OF STRESS TENSOR BASED ON HOOKE'S LAW
-      DELAS=DSTRAN-D_EQPLAS*DFDS
+      DELAS=DSTRAN-DEPLAS*DFDS
       D_SIG=MATMUL(CE,DELAS)
 
 C     1.6     NUMERICAL INTEGRATION
       SIG=SIG+D_SIG
-      EQPLAS=EQPLAS+D_EQPLAS
-      CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS, SIG, D_EQPLAS)
+      EPLAS=EPLAS+DEPLAS
+      CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS, SIG, DEPLAS)
 C-----------------------------------------------------------------------
 C     1.7     CONTINUUM TANGENT MODULUS
-      CALL CONTINUUM(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      CALL CONTINUUM(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
       CE=CEP
 
       RETURN
@@ -1672,7 +1359,7 @@ C-----------------------------------------------------------------------
 C
 C     NON-ITERATIVE STRESS UPDATE METHOD
 C     REF: S. YOON AND F. BARLAT, IJMS, 2023
-      SUBROUTINE NSPM(STAT_VAR,DSTRAN,D_EQPLAS,EQPLAS,SIG,CE)
+      SUBROUTINE NSPM(STAT_VAR,DSTRAN,DEPLAS,EPLAS,SIG,CE)
       IMPLICIT REAL*8(A-H, O-Z)
 
       DIMENSION STAT_VAR(NDIM6), DSTRAN(NDIM3), SIG(NDIM3),
@@ -1692,16 +1379,17 @@ C     [1]     STRESS
       SIG0=SIG
 C     [2]     DOUBLE_SIG
       CALL DOUBLE_DOT(SIG, SIG, NDIM3, XSIG)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
       IF(XSIG.EQ.0.D0) SIG=SIG0+MATMUL(CE,DSTRAN)
 C-----------------------------------------------------------------------
 C     2.1     ELASTOPLASTIC TANGENT MODULUS
-      CALL CONTINUUM(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      CALL CONTINUUM(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
 C-----------------------------------------------------------------------
 C     2.2     CALCULATION OF THE STRESS TENSOR INCREMENT
-      IF(D_EQPLAS .EQ. 0.D0) THEN
+      IF(DEPLAS .EQ. 0.D0) THEN
 C     [1] EFFECTIVE STRESS & FLOW STRESS
           CALL EFF_SIG(STAT_VAR, SIG0, SIG_BAR)
-          CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+          CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     [2] STRESS UPDATE WITH ELASTIC STIFFNESS
           D_SIG1=MATMUL(CE, DSTRAN)
           SIG=SIG0+D_SIG1
@@ -1730,14 +1418,14 @@ C     [2]     ELASTIC STRAIN INCREMENT
       DELAS=MATMUL(SE,D_SIG)
       DPLAS=DSTRAN-DELAS
 C     [3]     INCREMENT OF EFFECTIVE PLASTIC STRAIN
-      CALL EFF_STR(DPLAS, DFDS, D_EQPLAS)
+      CALL EFF_STR(DPLAS, DFDS, DEPLAS)
 C     [4]     EFFECTIVE STRAIN INTEGRATION
-      EQPLAS=EQPLAS+D_EQPLAS
+      EPLAS=EPLAS+DEPLAS
 C-----------------------------------------------------------------------
 C     2.5     UPDATE STATE VARIABLES OF ANISOTROPIC HARDENING MODEL
-      CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS, SIG, D_EQPLAS)
+      CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS, SIG, DEPLAS)
       CALL EFF_SIG(STAT_VAR, SIG, SIG_BAR)
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C-----------------------------------------------------------------------
 C     2.6     STRESS PROJECTION
       SIGT=SIG/SIG_BAR
@@ -1752,7 +1440,7 @@ C-----------------------------------------------------------------------
 C
 C     NON-ITERATIVE STRESS UPDATE METHOD
 C     REF: S. YOON AND F. BARLAT, IJMS, 2023
-      SUBROUTINE NSPM2(STAT_VAR,DSTRAN,D_EQPLAS,EQPLAS,SIG,CE)
+      SUBROUTINE NSPM2(STAT_VAR,DSTRAN,DEPLAS,EPLAS,SIG,CE)
       IMPLICIT REAL*8(A-H, O-Z)
 
       DIMENSION STAT_VAR(NDIM6), DSTRAN(NDIM3), SIG(NDIM3),
@@ -1774,13 +1462,13 @@ C     [2]     DOUBLE_SIG
       IF(XSIG.EQ.0.D0) SIG=SIG0+MATMUL(CE,DSTRAN)
 C-----------------------------------------------------------------------
 C     3.1     ELASTOPLASTIC TANGENT MODULUS
-      CALL CONSISTENT(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      CALL CONSISTENT(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
 C-----------------------------------------------------------------------
 C     3.2     CALCULATION OF THE STRESS TENSOR INCREMENT
-      IF(D_EQPLAS .EQ. 0.D0) THEN
+      IF(DEPLAS .EQ. 0.D0) THEN
 C     [1] EFFECTIVE STRESS & FLOW STRESS
           CALL EFF_SIG(STAT_VAR, SIG0, SIG_BAR)
-          CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+          CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     [2] STRESS UPDATE WITH ELASTIC STIFFNESS
           D_SIG1=MATMUL(CE, DSTRAN)
           SIG=SIG0+D_SIG1
@@ -1809,14 +1497,14 @@ C     [2]     ELASTIC STRAIN INCREMENT
       DELAS=MATMUL(SE,D_SIG)
       DPLAS=DSTRAN-DELAS
 C     [3]     INCREMENT OF EFFECTIVE PLASTIC STRAIN
-      CALL EFF_STR(DPLAS, DFDS, D_EQPLAS)
+      CALL EFF_STR(DPLAS, DFDS, DEPLAS)
 C     [4]     EFFECTIVE STRAIN INTEGRATION
-      EQPLAS=EQPLAS+D_EQPLAS
+      EPLAS=EPLAS+DEPLAS
 C-----------------------------------------------------------------------
 C     3.5     UPDATE STATE VARIABLES OF ANISOTROPIC HARDENING MODEL
-      CALL UPDATE_HARD_VAR(STAT_VAR, EQPLAS, SIG, D_EQPLAS)
+      CALL UPDATE_HARD_VAR(STAT_VAR, EPLAS, SIG, DEPLAS)
       CALL EFF_SIG(STAT_VAR, SIG, SIG_BAR)
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C-----------------------------------------------------------------------
 C     3.6     STRESS PROJECTION
       SIGT=SIG/SIG_BAR
@@ -1828,7 +1516,7 @@ C     3.7     RETURN ELASTOPLASTIC TANGENT STIFFNESS TENSOR
       RETURN
       END SUBROUTINE NSPM2
 C-----------------------------------------------------------------------
-      SUBROUTINE CONTINUUM(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      SUBROUTINE CONTINUUM(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
 C     #   THIS SUBROUTINE RETURNS CONTINUUM TANGENT MODULUS.
       IMPLICIT REAL*8 (A-H,O-Z)
       DIMENSION STAT_VAR(NDIM6), SIG(NDIM3), CE(NDIM3,NDIM3),
@@ -1843,9 +1531,9 @@ C     1.  PREQUISITES
 C     [1]     GRADIENT OF PLASTIC POTENTIAL: DFDS
       CALL GRAD(2,1,STAT_VAR,SIG,DFDS,DDFDDS)
 C     [2]     HARDENING RATE: DHDE
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     [3]     KINEMATIC COMPONENT: DFDE, DDFDEDS
-      CALL KINEMATIC_COMPONENT(STAT_VAR,EQPLAS,SIG,DSDE,DDFDEDS)
+      CALL KINEMATIC_COMPONENT(STAT_VAR,EPLAS,SIG,DSDE,DDFDEDS)
 C     2.  DENOMIATOR OF TANGENT STIFFNESS TENSOR
 C     [1]     DFDS_CE_DFDS
       DFDS_CE_DFDS=0.D0
@@ -1876,7 +1564,7 @@ C     4.  ELASTOPLASTIC TANGENT STIFFNESS
       RETURN
       END SUBROUTINE CONTINUUM
 C-----------------------------------------------------------------------
-      SUBROUTINE CONSISTENT(STAT_VAR,D_EQPLAS,EQPLAS,SIG,CE,CEP)
+      SUBROUTINE CONSISTENT(STAT_VAR,DEPLAS,EPLAS,SIG,CE,CEP)
 C     #   THIS SUBROUTINE RETURNS CONSISTENT TANGENT MODULUS.
       IMPLICIT REAL*8 (A-H,O-Z)
 
@@ -1894,22 +1582,22 @@ C     1.  PREQUISITES
 C     [1]     GRADIENT OF PLASTIC POTENTIAL: DFDS & DDFDDS
       CALL GRAD(2,2,STAT_VAR,SIG,DFDS,DDFDDS)
 C     [2]     HARDENING RATE: DHDE
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     [3]     ELASTIC COMPLIANCE TENSOR
       CALL INVERSE(CE, NDIM3, SE)
 C     [4]     INVERSE HESSIAN MATRIX: XHI
       DO I=1, NDIM3
       DO J=1, NDIM3
-          XHI(I,J)= SE(I,J)+D_EQPLAS*DDFDDS(I,J)
+          XHI(I,J)= SE(I,J)+DEPLAS*DDFDDS(I,J)
       END DO
       END DO
 C     [5]     HESSIAN MATRIX: XH
       CALL INVERSE(XHI, NDIM3, XH)
 C     2.  DENOMINATOR
 C     [1]     KINEMATIC COMPONENT: DFDE, DDFDEDS
-      CALL KINEMATIC_COMPONENT(STAT_VAR,EQPLAS,SIG,DSDE,DDFDEDS)
+      CALL KINEMATIC_COMPONENT(STAT_VAR,EPLAS,SIG,DSDE,DDFDEDS)
 C     [2]     XK: DR1DE
-      XK=D_EQPLAS*DDFDEDS+DFDS
+      XK=DEPLAS*DDFDEDS+DFDS
 C     [3]     DFDS_XH_XK
       DFDS_XH_XK=0.D0
       DO I=1, NDIM3
@@ -1942,7 +1630,47 @@ C     4.  ELASTOPLASTIC CONSISTENT TANGENT STIFFNESS
       RETURN
       END SUBROUTINE CONSISTENT
 C-----------------------------------------------------------------------
-      SUBROUTINE KINEMATIC_COMPONENT(STAT_VAR,EQPLAS,SIG,DSDE,DDFDEDS)
+      SUBROUTINE ELASTIC_STIFFNESS(PROPS, CE)
+C     #   THIS SUBROUTINE RETURNS ELASTIC TANGENT STIFFNESS TENSOR.
+      IMPLICIT REAL*8 (A-H,O-Z)
+      DIMENSION PROPS(NPROPS), CE(NTENS,NTENS)
+      COMMON /KUMAT/ NPROPS, NSTATV, NTENS, NDATA
+C     [1] MATERIAL PROPERTIES
+      XYM=PROPS(7)                                ! YOUNG'S MOULUS
+      XNU=PROPS(8)                                ! POISSON'S RATION
+      XMU= XYM/(2.D0*(1.D0+XNU))                  ! SHEAR MODULUS:   XMU=E/[2*(1+V)]
+      XLM= XNU*XYM/((1.D0+XNU)*(1.D0-2.D0*XNU))   ! LAME'S CONSTANT: XLM=E/[(1+V)(1-2V)]
+      XVAL=XYM/(1.D0-XNU**2)
+C     [2] ELASTIC TANGENT STIFFNESS TENSOR
+      CE=0.D0
+      IF(NTENS .EQ. 3) THEN
+C     #   CE(1:2, 1:2)
+          DO I=1, 2
+          DO J=1, 2
+              CE(I,J)= XVAL*XNU
+          END DO
+              CE(I,I)= XVAL*1.D0
+          END DO
+C     #   CE(3,3)
+          CE(3,3)= 1.D0*XMU
+      ELSE
+C     #   CE(1:3, 1:3)
+          DO I=1, 3
+          DO J=1, 3
+              CE(I,J)=XLM
+          END DO
+          CE(I,I)=XLM+2.D0*XMU
+          END DO
+C     #   CE(4:6, 4:6)
+          DO I=4, 6
+              CE(I,I)=XMU
+          END DO
+      END IF
+
+      RETURN
+      END SUBROUTINE ELASTIC_STIFFNESS
+C-----------------------------------------------------------------------
+      SUBROUTINE KINEMATIC_COMPONENT(STAT_VAR,EPLAS,SIG,DSDE,DDFDEDS)
 C     #   THIS SUBROUTINE CALCULATES THE KINEMATIC COMPONENTS: DFDE & DDFDEDS
 C         VIA THE PSEUDO-UPDATE OF STATE VARIABLE.
 C     #   FOR ISOTROPIC HARDENING, DSDE & DDFDEDS=0.D0.
@@ -1955,8 +1683,8 @@ C     #   FOR ISOTROPIC HARDENING, DSDE & DDFDEDS=0.D0.
       COMMON /KSIZE/ NDIM1, NDIM2, NDIM3, NDIM4, NDIM5, NDIM6, NDIM7
 
 C     [0] PREQUISITES
-      D_EQPLAS0=1.D-5
-      EQPLAS1=EQPLAS+D_EQPLAS0
+      DEPLAS0=1.D-5
+      EPLAS1=EPLAS+DEPLAS0
       DO I=1,NDIM6
           STAT_VAR1(I)=STAT_VAR(I)
       END DO
@@ -1964,16 +1692,16 @@ C     [0] PREQUISITES
           SIG1(I)=SIG(I)
       END DO
 c     [1] PSEUDO-UPDATE OF STATE VARIABLE
-      CALL UPDATE_HARD_VAR(STAT_VAR1, EQPLAS1, SIG1, D_EQPLAS0)
+      CALL UPDATE_HARD_VAR(STAT_VAR1, EPLAS1, SIG1, DEPLAS0)
 C     [2] DSDE: THE FIRST-ORDER KINEMATIC COMPONENT
       CALL EFF_SIG(STAT_VAR, SIG, SIG_BAR)
       CALL EFF_SIG(STAT_VAR1, SIG1, SIG_BAR1)
-      DSDE=(SIG_BAR1-SIG_BAR)/D_EQPLAS0
+      DSDE=(SIG_BAR1-SIG_BAR)/DEPLAS0
 C     [3] DDFDEDS: THE SECOND-ORDER KINEMATIC COMPONENT
       CALL GRAD(2,1,STAT_VAR,SIG,DFDS,DDFDDS)
       CALL GRAD(2,1,STAT_VAR1,SIG1,DFDS1,DDFDDS1)
       DO I=1,NDIM3
-          DDFDEDS(I)=(DFDS1(I)-DFDS(I))/D_EQPLAS0
+          DDFDEDS(I)=(DFDS1(I)-DFDS(I))/DEPLAS0
       END DO
 
       RETURN
@@ -1984,7 +1712,7 @@ C                                                                      C
 C     SUB.3  HARDENING LAWS                                            C
 C                                                                      C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-      SUBROUTINE FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      SUBROUTINE FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     #   THIS SUBROUTINE RETURNS FLOW STRESS
       IMPLICIT REAL*8 (A-H,O-Z)
 
@@ -2005,28 +1733,28 @@ C     #   THIS SUBROUTINE RETURNS FLOW STRESS
           IF(H4.EQ.0.D0) THEN
 C     #   REF: T.J. PARK, IJSS, 2012
               CALL ISO_HARD(STAT_VAR, 0.D0, FLOW_SIG0, DHDE)
-              CALL ISO_HARD(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+              CALL ISO_HARD(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
               FLOW_SIG=H3*(FLOW_SIG+FLOW_SIG0)
               DHDE=H3*DHDE
           ELSE
-              CALL CB_HARD(EQPLAS, FLOW_SIG, DHDE)
+              CALL CB_HARD(EPLAS, FLOW_SIG, DHDE)
           END IF
       ELSEIF(HARD_PAR.EQ.2.D0) THEN
           FLOW_SIG= H2
           DHDE= 0.D0
       ELSEIF(FLOOR(HARD_PAR) .EQ. 5.D0) THEN
-          CALL ISO_HARD(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+          CALL ISO_HARD(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
           GP= STAT_VAR(5)
           DHDE= GP*DHDE
           FLOW_SIG=GP*FLOW_SIG
       ELSE
-          CALL ISO_HARD(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+          CALL ISO_HARD(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
       END IF
 
       RETURN
       END SUBROUTINE FLOW_STRESS
 C-----------------------------------------------------------------------
-      SUBROUTINE ISO_HARD(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      SUBROUTINE ISO_HARD(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     #   THIS SUBROUTINE RETURNS FLOW STRESS OF ISOTROPIC HARDENING LAW.
       IMPLICIT REAL*8 (A-H,O-Z)
 
@@ -2035,43 +1763,47 @@ C     #   THIS SUBROUTINE RETURNS FLOW STRESS OF ISOTROPIC HARDENING LAW.
       COMMON /KSIZE/ NDIM1, NDIM2, NDIM3, NDIM4, NDIM5, NDIM6, NDIM7
       COMMON /KIHARD/ P1, P2, P3, P4, P5, P6, P7, P8, P9, P10
 
-      IF(FLOW_PAR.EQ.1.D0) THEN
+      IF(FLOW_PAR.EQ.0.D0) THEN
+C     #   PERFECT PLSATIC LAW #
+          FLOW_SIG=P1
+          DHDE=0.D0
+      ELSEIF(FLOW_PAR.EQ.1.D0) THEN
 C     #   SWIFT HARDENING LAW #
-          FLOW_SIG=P1*(P2+EQPLAS)**P3             ! H(¥Å_BAR) = P1*(P2 + ¥Å_BAR)^P3
-          DHDE    =P1*P3*(P2+EQPLAS)**(P3-1.D0)    ! ¡ÓH/¡Ó(¥Å_BAR) = P1*P3*(P2 + ¥Å_BAR)^(P3-1)
+          FLOW_SIG=P1*(P2+EPLAS)**P3
+          DHDE    =P1*P3*(P2+EPLAS)**(P3-1.D0)
       ELSEIF(FLOW_PAR.EQ.2.D0) THEN
 C     #   VOCE HARDENING LAW #
-          FLOW_SIG=P1-P2*DEXP(-P3*EQPLAS)    ! H(¥Å_BAR) = P1-P2*EXP(-P3*¥Å_BAR)]
-          DHDE    =P2*P3*DEXP(-P3*EQPLAS)    ! ¡ÓH/¡Ó(¥Å_BAR) = P2*P3*EXP(-P3*¥Å_BAR)
+          FLOW_SIG=P1-P2*DEXP(-P3*EPLAS)
+          DHDE    =P2*P3*DEXP(-P3*EPLAS)
       ELSEIF(FLOW_PAR.EQ.3.D0) THEN
 C     #   MODIFIED-VOCE HARDENING LAW #
-          FLOW_SIG=P1+P2*EQPLAS +P3*(1.D0-DEXP(-P4*EQPLAS))
-          DHDE    =P2+ P3*P4*DEXP(-P4*EQPLAS)
+          FLOW_SIG=P1+P2*EPLAS +P3*(1.D0-DEXP(-P4*EPLAS))
+          DHDE    =P2+ P3*P4*DEXP(-P4*EPLAS)
       ELSEIF(FLOW_PAR.EQ.4.D0) THEN
 C     #   SWIFT+MODIFIED-VOCE HARDENING LAW #
-          FLOW_SIG=P1*(P2+EQPLAS)**P3+P4+P5*EQPLAS
-     1             +P6*(1.D0-DEXP(-P7*EQPLAS))
-          DHDE    =P5+P1*P3*(P2 + EQPLAS)**(P3-1.D0)
-     1             +P6*P7*DEXP(-P7*EQPLAS)
+          FLOW_SIG=P1*(P2+EPLAS)**P3+P4+P5*EPLAS
+     1             +P6*(1.D0-DEXP(-P7*EPLAS))
+          DHDE    =P5+P1*P3*(P2 + EPLAS)**(P3-1.D0)
+     1             +P6*P7*DEXP(-P7*EPLAS)
       ELSEIF(FLOW_PAR.EQ.5.D0) THEN
 C     #   HOCKETT-SHERBY + LINEAR HARDENING LAW #
-          IF(EQPLAS .EQ. 0.D0) THEN
-              EQPLAS0= 1.D-9
+          IF(EPLAS .EQ. 0.D0) THEN
+              EPLAS0= 1.D-9
           ELSE
-              EQPLAS0= EQPLAS
+              EPLAS0= EPLAS
           END IF
-          FLOW_SIG=P1-(P1-P2)*DEXP(-P3*EQPLAS0**P4) + P5*EQPLAS0
-          DHDE=(P1-P2)*P3*P4*EQPLAS0**(P4-1.D0)
-     1        *DEXP(-P3*EQPLAS0**P4) + P5
+          FLOW_SIG=P1-(P1-P2)*DEXP(-P3*EPLAS0**P4) + P5*EPLAS0
+          DHDE=(P1-P2)*P3*P4*EPLAS0**(P4-1.D0)
+     1        *DEXP(-P3*EPLAS0**P4) + P5
       ELSEIF(FLOW_PAR.EQ.6.D0) THEN
 C     #   COMBINED SWIFT-VOCE #
-          FLOW_SIG= P1*(P2*(P3+EQPLAS)**P4)
-     1             +(1.D0-P1)*(P5-P6*DEXP(-P7*EQPLAS))
-          DHDE= P1*P2*P4*(P3+EQPLAS)**(P4-1.D0)
-     1         +(1.D0-P1)*P6*P7*DEXP(-P7*EQPLAS)
+          FLOW_SIG= P1*(P2*(P3+EPLAS)**P4)
+     1             +(1.D0-P1)*(P5-P6*DEXP(-P7*EPLAS))
+          DHDE= P1*P2*P4*(P3+EPLAS)**(P4-1.D0)
+     1         +(1.D0-P1)*P6*P7*DEXP(-P7*EPLAS)
       ELSEIF(FLOW_PAR.EQ.7.D0) THEN
 C     #   DISLOCATION-BASED HARDENING: RGBV [15]#
-          IF(EQPLAS .EQ. 0.D0) THEN
+          IF(EPLAS .EQ. 0.D0) THEN
               RHO_TOT=P10
               DRDE=0.D0
           ELSE
@@ -2092,7 +1824,7 @@ C     #   ORIGINAL EQUATION
       RETURN
       END SUBROUTINE ISO_HARD
 C-----------------------------------------------------------------------
-      SUBROUTINE CB_HARD(EQPLAS, FLOW_SIG, DHDE)
+      SUBROUTINE CB_HARD(EPLAS, FLOW_SIG, DHDE)
 C     #   THIS SUBROUTINE RETURNS STATE VARIABLES OF KINEMATIC HARDENING MODELS.
       IMPLICIT REAL*8 (A-H,O-Z)
       
@@ -2102,38 +1834,38 @@ C     #   THIS SUBROUTINE RETURNS STATE VARIABLES OF KINEMATIC HARDENING MODELS.
 C     #   REF: J.Y. LEE, IJSS, 2012
       IF(FLOW_PAR.EQ.1.D0) THEN
 C     #   SWIFT HARDENING LAW #
-          FLOW_SIG=H3*(H4+EQPLAS)**H5             ! H(¥Å_BAR) = H3*(H4 + ¥Å_BAR)^H5
-          DHDE    =H3*H5*(H4+EQPLAS)**(H5-1.D0)    ! DH/D(¥Å_BAR) = H3*H5*(H4 + ¥Å_BAR)^(H5-1)
+          FLOW_SIG=H3*(H4+EPLAS)**H5             ! H(¥Å_BAR) = H3*(H4 + ¥Å_BAR)^H5
+          DHDE    =H3*H5*(H4+EPLAS)**(H5-1.D0)    ! DH/D(¥Å_BAR) = H3*H5*(H4 + ¥Å_BAR)^(H5-1)
       ELSEIF(FLOW_PAR.EQ.2.D0) THEN
 C     #   VOCE HARDENING LAW #
-          FLOW_SIG=H3-H4*DEXP(-H5*EQPLAS)    ! H(¥Å_BAR) = H3-H4*EXP(-H5*¥Å_BAR)]
-          DHDE    =H4*H5*DEXP(-H5*EQPLAS)    ! DH/D(¥Å_BAR) = H4*H5*EXP(-H5*¥Å_BAR)
+          FLOW_SIG=H3-H4*DEXP(-H5*EPLAS)    ! H(¥Å_BAR) = H3-H4*EXP(-H5*¥Å_BAR)]
+          DHDE    =H4*H5*DEXP(-H5*EPLAS)    ! DH/D(¥Å_BAR) = H4*H5*EXP(-H5*¥Å_BAR)
       ELSEIF(FLOW_PAR.EQ.3.D0) THEN
 C     #   MODIFIED-VOCE HARDENING LAW #
-          FLOW_SIG=H3+H4*EQPLAS +H5*(1.D0-DEXP(-H6*EQPLAS))
-          DHDE    =H4+ H5*H6*DEXP(-H6*EQPLAS)
+          FLOW_SIG=H3+H4*EPLAS +H5*(1.D0-DEXP(-H6*EPLAS))
+          DHDE    =H4+ H5*H6*DEXP(-H6*EPLAS)
       ELSEIF(FLOW_PAR.EQ.4.D0) THEN
 C     #   SWIFT+MODIFIED-VOCE HARDENING LAW #
-          FLOW_SIG=H3*(H4+EQPLAS)**H5+H6+H7*EQPLAS
-     1             +H8*(1.D0-DEXP(-H9*EQPLAS))
-          DHDE    =H7+H3*H5*(H4 + EQPLAS)**(H5-1.D0)
-     1             +H8*H9*DEXP(-H9*EQPLAS)
+          FLOW_SIG=H3*(H4+EPLAS)**H5+H6+H7*EPLAS
+     1             +H8*(1.D0-DEXP(-H9*EPLAS))
+          DHDE    =H7+H3*H5*(H4 + EPLAS)**(H5-1.D0)
+     1             +H8*H9*DEXP(-H9*EPLAS)
       ELSEIF(FLOW_PAR.EQ.5.D0) THEN
 C     #   HOCKETT-SHERBY + LINEAR HARDENING LAW #
-          IF(EQPLAS .EQ. 0.D0) THEN
-              EQPLAS0= 1.D-9
+          IF(EPLAS .EQ. 0.D0) THEN
+              EPLAS0= 1.D-9
           ELSE
-              EQPLAS0= EQPLAS
+              EPLAS0= EPLAS
           END IF
-          FLOW_SIG=H3-(H3-H4)*DEXP(-H5*EQPLAS0**H6) + H7*EQPLAS0
-          DHDE=(H3-H4)*H5*H6*EQPLAS0**(H6-1.D0)
-     1            *DEXP(-H5*EQPLAS0**H6) + H7
+          FLOW_SIG=H3-(H3-H4)*DEXP(-H5*EPLAS0**H6) + H7*EPLAS0
+          DHDE=(H3-H4)*H5*H6*EPLAS0**(H6-1.D0)
+     1            *DEXP(-H5*EPLAS0**H6) + H7
       ELSEIF(FLOW_PAR.EQ.6.D0) THEN
 C     #   COMBINED SWIFT-VOCE #
-          FLOW_SIG= H1*(H2*(H3+EQPLAS)**H4)
-     1             +(1.D0-H1)*(H5-H6*DEXP(-H7*EQPLAS))
-          DHDE= H1*H2*H4*(H3+EQPLAS)**(H4-1.D0)
-     1             +(1.D0-H1)*H6*H7*DEXP(-H7*EQPLAS)
+          FLOW_SIG= H1*(H2*(H3+EPLAS)**H4)
+     1             +(1.D0-H1)*(H5-H6*DEXP(-H7*EPLAS))
+          DHDE= H1*H2*H4*(H3+EPLAS)**(H4-1.D0)
+     1             +(1.D0-H1)*H6*H7*DEXP(-H7*EPLAS)
       ELSEIF(FLOW_PAR.EQ.7.D0) THEN
 C     #   DISLOCATION-BASED HARDENING: RGBV [15]#
           PRINT *, '#MSG: DISLOCATION-BASED HARDENING IS NOT AVAILABLE 
@@ -2143,7 +1875,7 @@ C     #   DISLOCATION-BASED HARDENING: RGBV [15]#
       RETURN
       END SUBROUTINE CB_HARD
 C-----------------------------------------------------------------------
-      SUBROUTINE YU_HARD(EQPLAS, FLOW_SIG, DHDE)
+      SUBROUTINE YU_HARD(EPLAS, FLOW_SIG, DHDE)
 C     #   THIS SUBROUTINE RETURNS FLOW STRESS OF ISOTROPIC HARDENING TERM OF YU.
       IMPLICIT REAL*8 (A-H,O-Z)
 
@@ -2151,42 +1883,42 @@ C     #   THIS SUBROUTINE RETURNS FLOW STRESS OF ISOTROPIC HARDENING TERM OF YU.
       COMMON /KAHARD/ H1, H2, H3, H4, H5, H6, H7, H8, H9, H10, H11
 C     #   ORITINAL HARDENING LAW#
       IF(FLOW_PAR.EQ.0.D0) THEN
-          FLOW_SIG= H7*(1.D0-DEXP(-H4*EQPLAS))
-          DHDE    = H7*H4*DEXP(-H4*EQPLAS)
+          FLOW_SIG= H7*(1.D0-DEXP(-H4*EPLAS))
+          DHDE    = H7*H4*DEXP(-H4*EPLAS)
       ELSEIF(FLOW_PAR.EQ.1.D0) THEN
 C     #   SWIFT HARDENING LAW #
-          FLOW_SIG=H7*((H8+EQPLAS)**H9-H8**H9)             ! H(E_BAR) = H7*(H8 + E_BAR)^H9
-          DHDE    =H7*H9*(H8+EQPLAS)**(H9-1.D0)    ! DH/D(E_BAR) = H7*H9*(H8 + E_BAR)^(H9-1)
+          FLOW_SIG=H7*((H8+EPLAS)**H9-H8**H9)             ! H(E_BAR) = H7*(H8 + E_BAR)^H9
+          DHDE    =H7*H9*(H8+EPLAS)**(H9-1.D0)    ! DH/D(E_BAR) = H7*H9*(H8 + E_BAR)^(H9-1)
       ELSEIF(FLOW_PAR.EQ.2.D0) THEN
 C     #   VOCE HARDENING LAW #
-          FLOW_SIG=H7-H8*DEXP(-H9*EQPLAS)    ! H(E_BAR) = H7-H8*EXP(-H9*E_BAR)]
-          DHDE    =H8*H9*DEXP(-H9*EQPLAS)    ! DH/D(E_BAR) = H8*H9*EXP(-H9*E_BAR)
+          FLOW_SIG=H7-H8*DEXP(-H9*EPLAS)    ! H(E_BAR) = H7-H8*EXP(-H9*E_BAR)]
+          DHDE    =H8*H9*DEXP(-H9*EPLAS)    ! DH/D(E_BAR) = H8*H9*EXP(-H9*E_BAR)
       ELSEIF(FLOW_PAR.EQ.3.D0) THEN
 C     #   MODIFIED-VOCE HARDENING LAW #
-          FLOW_SIG=H7+H8*EQPLAS +H9*(1.D0-DEXP(-H10*EQPLAS))
-          DHDE    =H8+ H9*H10*DEXP(-H10*EQPLAS)
+          FLOW_SIG=H7+H8*EPLAS +H9*(1.D0-DEXP(-H10*EPLAS))
+          DHDE    =H8+ H9*H10*DEXP(-H10*EPLAS)
       ELSEIF(FLOW_PAR.EQ.4.D0) THEN
 C     #   SWIFT+MODIFIED-VOCE HARDENING LAW #
-          FLOW_SIG= H7*(EQPLAS)**H8- H7**H8
-     1             +H9*EQPLAS+H10*(1.D0-DEXP(-H11*EQPLAS))
-          DHDE= H7*H8*(EQPLAS)**(H8-1.D0)
-     1         +H9+H10*H11*DEXP(-H11*EQPLAS)
+          FLOW_SIG= H7*(EPLAS)**H8- H7**H8
+     1             +H9*EPLAS+H10*(1.D0-DEXP(-H11*EPLAS))
+          DHDE= H7*H8*(EPLAS)**(H8-1.D0)
+     1         +H9+H10*H11*DEXP(-H11*EPLAS)
       ELSEIF(FLOW_PAR.EQ.5.D0) THEN
 C     #   HOCKETT-SHERBY + LINEAR HARDENING LAW #
-          IF(EQPLAS .EQ. 0.D0) THEN
-              EQPLAS0= 1.D-9
+          IF(EPLAS .EQ. 0.D0) THEN
+              EPLAS0= 1.D-9
           ELSE
-              EQPLAS0= EQPLAS
+              EPLAS0= EPLAS
           END IF
-          FLOW_SIG=H7-(H7-H8)*DEXP(-H9*EQPLAS0**H10)+H11*EQPLAS0
-          DHDE=(H7-H8)*H9*H10*EQPLAS0**(H10-1.D0)
-     1        *DEXP(-H9*EQPLAS0**H10)+H11
+          FLOW_SIG=H7-(H7-H8)*DEXP(-H9*EPLAS0**H10)+H11*EPLAS0
+          DHDE=(H7-H8)*H9*H10*EPLAS0**(H10-1.D0)
+     1        *DEXP(-H9*EPLAS0**H10)+H11
 C     #   COMBINED HOLLOMON-VOCE #
       ELSEIF(FLOW_PAR.EQ.6.D0) THEN
-          FLOW_SIG= H7*(H8*(EQPLAS)**H9- H8**H9)
-     1             +(1.D0-H7)*(H10*(1.D0-DEXP(-H11*EQPLAS)))
-          DHDE= H7*H8*H9*(EQPLAS)**(H9-1.D0)
-     1         +(1.D0-H7)*H10*H11*DEXP(-H11*EQPLAS)
+          FLOW_SIG= H7*(H8*(EPLAS)**H9- H8**H9)
+     1             +(1.D0-H7)*(H10*(1.D0-DEXP(-H11*EPLAS)))
+          DHDE= H7*H8*H9*(EPLAS)**(H9-1.D0)
+     1         +(1.D0-H7)*H10*H11*DEXP(-H11*EPLAS)
       END IF
 
       RETURN
@@ -2197,7 +1929,7 @@ C                                                                      C
 C     SUB.4  EQUIVLANET STRESS                                         C
 C                                                                      C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-      SUBROUTINE YIELD_CONDITION(STAT_VAR, EQPLAS, SIG, FVAL)
+      SUBROUTINE YIELD_CONDITION(STAT_VAR, EPLAS, SIG, FVAL)
 C     #   THIS SUBROUTINE RETURNS THE RESIDUAL VALUE OF YIELD CONDITION.
       IMPLICIT REAL*8 (A-H,O-Z)
       DIMENSION STAT_VAR(NDIM6), SIG(NDIM3)
@@ -2206,7 +1938,7 @@ C     #   THIS SUBROUTINE RETURNS THE RESIDUAL VALUE OF YIELD CONDITION.
 C     [1] EFFECTIVE STRESS
       CALL EFF_SIG(STAT_VAR, SIG, SIG_BAR)
 C     [2] FLOW STRESS
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     [3] RESIDUAL VALUE
       FVAL=SIG_BAR-FLOW_SIG
       
@@ -2338,7 +2070,7 @@ C     [4] EQUIVALENT STRESS
       RETURN
       END SUBROUTINE HAH11
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_HAH11(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_HAH11(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
 C     #   THIS SUBROUTINE UPDATES THE HARDENING STATE VARIABLES OF HAH11
       IMPLICIT REAL*8(A-H, O-Z)
       DIMENSION SIG(NDIM3), DEV_SIG(NDIM4), G(NDIM5), DEL_G(NDIM5),
@@ -2360,7 +2092,7 @@ C     #   STATE VARIABLES FOR HAH11 MODEL
       END DO
 C     # DEFINE YIELD STRENGHTH AND FLOW STRESS
       CALL FLOW_STRESS(STAT_VAR, 0.D0, FLOW_SIG0, DHDE)
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     #   CALCULATE THE INCREMENTS OF INTERNAL PARAMETERS OF HAH MODEL
 C     S= DEV_SIG(I+1, N+1)
       CALL DEVIATORIC(SIG,DEV_SIG)
@@ -2381,7 +2113,7 @@ C     #   MICROSTRUCTURE DEVIATOR
       DO I=1, NDIM4
           DEL_DEV_H(I)=XLM*XK*(DEV_S(I)-DEV_H(I)*COS_X)
       END DO
-      DEV_H=DEV_H+DEL_DEV_H*DEL_EQPLAS
+      DEV_H=DEV_H+DEL_DEV_H*DEL_EPLAS
       CALL NORM_HAH(DEV_H, DEV_H)
 C     #   REVERSE LOADING VARIABLES
 C     [1] BAUSCHINGER EFFECT
@@ -2393,7 +2125,7 @@ C     [2] PERMANENT SOFTENING
       DEL_G(3)= ((1.D0-XLM)/2.D0)*XK5*(XK4-G(3))
       DEL_G(4)= ((1.D0+XLM)/2.D0)*XK5*(XK4-G(4))
 
-      G=G+DEL_G*DEL_EQPLAS
+      G=G+DEL_G*DEL_EPLAS
       IF(G(1) .GT. 1.D0) G(1)=1.D0
       IF(G(2) .GT. 1.D0) G(2)=1.D0
 
@@ -2475,7 +2207,7 @@ C     [5] EQUIVALENT STRESS
       RETURN
       END SUBROUTINE HAH14
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_HAH14(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_HAH14(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
 C     #   THIS SUBROUTINE UPDATES THE HARDENING STATE VARIABLES OF HAH14
       IMPLICIT REAL*8(A-H, O-Z)
 
@@ -2500,7 +2232,7 @@ C     [0] STATE VARIABLES FOR HAH MODEL
       END DO
 C     # DEFINE YIELD STRENGHTH AND FLOW STRESS
       CALL FLOW_STRESS(STAT_VAR, 0.D0, FLOW_SIG0, DHDE)
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 C     [1] PREREQUISITE
 C     1.1 MICROSCTURE DEVIATOR COEFFICIENTS
       XZ  =5.D0
@@ -2531,7 +2263,7 @@ C      VAL=XK*XLM*((DABS(COS_X))**(1.D0/XZ)+G(7))
       DO I=1, NDIM4
           DEL_DEV_H(I)=VAL*(DEV_H0(I)-DEV_H(I)*COS_X)
       END DO
-      DEV_H=DEV_H+DEL_DEV_H*DEL_EQPLAS
+      DEV_H=DEV_H+DEL_DEV_H*DEL_EPLAS
       CALL NORM_HAH(DEV_H, DEV_H)
 C-----------------------------------------------------------------------
 C     [3] REVERSE LOADING VARIABLE EVOLUTION
@@ -2551,7 +2283,7 @@ C     [6] LATENT HARDENING EVOLUTION
       DEL_G(6)= XKL*(VAL*(DSQRT(VAL2)-1.D0)+1.D0-G(6))
 
 C     [8] UPDTAE G-VALUES
-      G=G+DEL_G*DEL_EQPLAS
+      G=G+DEL_G*DEL_EPLAS
       VAL=XK3*(FLOW_SIG0/FLOW_SIG)
       IF(G(1) .GT. 1.D0) G(1)=1.D0
       IF(G(2) .GT. 1.D0) G(2)=1.D0
@@ -2657,7 +2389,7 @@ C     [6] EQUIVALENT STRESS
       RETURN
       END SUBROUTINE HAH20
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_HAH20(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_HAH20(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
 C     #   THIS SUBROUTINE UPDATES THE HARDENING STATE VARIABLES OF HAH20
       IMPLICIT REAL*8(A-H, O-Z)
 
@@ -2684,22 +2416,23 @@ C     [0] STATE VARIABLES FOR HAH MODEL
       END DO
 C     # DEFINE YIELD STRENGHTH AND FLOW STRESS
       CALL FLOW_STRESS(STAT_VAR, 0.D0, FLOW_SIG0, DHDE)
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
 
 C     [1] PREREQUIRED VARIABLES
 C     1.1 THE OTHER COEFFICIENTS
 C     1.1.1   MICROSTRUCTURE DEVIATOR
 C      XKP= XK1/2.D0
-      XKP= 15.D0
+      XKP= 30.D0
       XI_R= 8.D0
 C     1.1.2   BAUSCHINGER RELATED EFFECTS
       XI_B =4.D0
       XI_BP=1.5D0
 C     1.1.3   PERMANENT SOFTENING
       XKS =XK1
-      XI_S =1.D0
+      XI_S =1.5D0
 C     1.1.4   CROSS-LOADIN CONTRACTION
-      XKCP =XKC
+C      XKCP =XKC
+      XKCP= 28.D0
       XI_CP=6.D0
 C     1.1.5   LATENT HARDENING
       XI_LP =0.5D0
@@ -2741,8 +2474,8 @@ C         XI_R.
           DEL_DEV_H(I)= XLM*XK*((COS_XP2**XI_R)
      1                 +(COS_X2**XI_R))*(DEV_H0(I)-COS_X*DEV_H(I))
       END DO
-      DEV_H=DEV_H+DEL_DEV_H*DEL_EQPLAS
-      DEV_HP=DEV_HP+DEL_DEV_HP*DEL_EQPLAS
+      DEV_H=DEV_H+DEL_DEV_H*DEL_EPLAS
+      DEV_HP=DEV_HP+DEL_DEV_HP*DEL_EPLAS
       CALL NORM_HAH(DEV_H, DEV_H)
       CALL NORM_HAH(DEV_HP, DEV_HP)
 C-----------------------------------------------------------------------
@@ -2780,7 +2513,7 @@ C     [4] PERMANENT SOFTENING EVOLUTION
           IF((GPP-G(5)) .LT. 0.D0) G(5)=GPP
 C     4.1 DEL_G3P= ¥ÄG3'
           DEL_G3P= XK5*G(6)*(XK4-G(3))
-          G3P= G(3)+DEL_G3P*DEL_EQPLAS
+          G3P= G(3)+DEL_G3P*DEL_EPLAS
 C     4.2 DEL_G(6)= ¥ÄGS
           DEL_G(6)=-XKS*(1.D0-DABS(DOUBLE2))*G(6)
           IF((G3P-G(5)) .LE. 0.D0) THEN
@@ -2804,7 +2537,7 @@ C     [6] LATENT HARDENING EVOLUTION
       DEL_G(8)=XKL*(VAL1+VAL2)
 
 C     [7] UPDTAE G-VALUES
-      G=G+DEL_G*DEL_EQPLAS
+      G=G+DEL_G*DEL_EPLAS
       VAL=XK3*(FLOW_SIG0/FLOW_SIG)
       IF(G(1) .GT. 1.D0) THEN
           G(1)=1.D0
@@ -2916,7 +2649,7 @@ C     [4] EQUIVALENT STRESS
       RETURN
       END SUBROUTINE HEXAH
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_HEXAH0(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_HEXAH0(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
 C     #   THIS SUBROUTINE UPDATES THE HARDENING STATE VARIABLES OF HEXAH
 C     #   A CRITERION FOR RECYCLE OF PRE-ACTIVATED SLIP SYSTEM
 C     #   REF: B. REYNE ET AL., 2022
@@ -2926,12 +2659,12 @@ C     #   REF: B. REYNE ET AL., 2022
       DIMENSION DEV_SIG(NDIM4), DEV_S(NDIM4), DFDS(NDIM3), 
      1          DDFDDS(NDIM3,NDIM3), DEL_G(NDIM5), DEL_DEV_H(NDIM4), 
      2          DPLAS(NDIM3), IDSS(MSS+1), CRIT(MSS), GM(MSS+1,NDIM5), 
-     3          DEV_HM(MSS+1,NDIM4), EQPLASIM(MSS+1), COS_XM(MSS+1)
+     3          DEV_HM(MSS+1,NDIM4), EPLASIM(MSS+1), COS_XM(MSS+1)
       DIMENSION DEV_AUX(NDIM4), DPLAS0(NDIM4), PLAS0(NDIM4)
 C     GLOBAL STATE VARIABLES
       DIMENSION PLAS(NDIM3)
 C     LOCAL STATE VARIABLES
-      DIMENSION G(MSS+1,NDIM5), DEV_H(MSS+1,NDIM4), EQPLASI(MSS+1),
+      DIMENSION G(MSS+1,NDIM5), DEV_H(MSS+1,NDIM4), EPLASI(MSS+1),
      1          COS_X(MSS+1)
 
       COMMON /KSIZE/ NDIM1, NDIM2, NDIM3, NDIM4, NDIM5, NDIM6, NDIM7
@@ -2966,7 +2699,7 @@ C     #   LOCAL MICROSTRUCTURE DEVIATOR
               DEV_H(N,I)=STAT_VAR(NDIM+NDIM5+I)
           END DO
 C     #   LOCAL EQUIVALENT PLASTIC STRAIN
-          EQPLASI(N)=STAT_VAR(NDIM+NDIM5+NDIM4+1)
+          EPLASI(N)=STAT_VAR(NDIM+NDIM5+NDIM4+1)
 C     #   LOCAL STRAIN PATH CHANGE PARAMETER
           COS_X(N)=STAT_VAR(NDIM+NDIM5+NDIM4+2)
       END DO
@@ -2979,7 +2712,7 @@ C      XI_MAX=PI/3.D0
       CALL NORM_HAH(DEV_SIG, DEV_S)
       CALL DOUBLE_DOT(DEV_H(NSS,:), DEV_S, NDIM4, COS_X(NSS))
       IF(DABS(COS_X(NSS)).GT.1.D0)COS_X(NSS)=COS_X(NSS)/DABS(COS_X(NSS))
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
       CALL GRAD(2,1,STAT_VAR,SIG,DFDS,DDFDDS)
       DEL_G=0.D0
 C-----------------------------------------------------------------------
@@ -2993,7 +2726,7 @@ C     #   INITIALIZE LOCAL MICROSTRUCTURE DEVIATOR
 C     #   INITIALIZE LOCAL G-VALUES
           G(NSS,:)=1.D0
 C     #   STORE THE EFFECTIVE STRAIN
-          EQPLASI(NSS)=EQPLAS
+          EPLASI(NSS)=EPLAS
 C     #   STRAIN PATH CHANGE PARAMETER
           COS_X(NSS)  =1.D0
       END IF
@@ -3031,10 +2764,10 @@ C     [3.3B]   CROSS-LOADING CONTRACTION VARIABLES
       END IF
 
 C     [3.4]   UPDATE LOCAL STATE VARIABLES
-      DEV_H(N,:)=DEV_H(N,:)+DEL_DEV_H*DEL_EQPLAS
-      G(N,1)=G(N,1)+DEL_G(1)*DEL_EQPLAS ! G+
-      G(N,2)=G(N,2)+DEL_G(2)*DEL_EQPLAS ! G-
-      G(N,3)=G(N,3)+DEL_G(3)*DEL_EQPLAS ! GC
+      DEV_H(N,:)=DEV_H(N,:)+DEL_DEV_H*DEL_EPLAS
+      G(N,1)=G(N,1)+DEL_G(1)*DEL_EPLAS ! G+
+      G(N,2)=G(N,2)+DEL_G(2)*DEL_EPLAS ! G-
+      G(N,3)=G(N,3)+DEL_G(3)*DEL_EPLAS ! GC
 
 C     [3.5]   NUMERICAL CONSTRAINT
       IF(G(N,1) .GT. 1.D0) THEN
@@ -3056,7 +2789,7 @@ C     [3.5]   NUMERICAL CONSTRAINT
 C-----------------------------------------------------------------------
 C     [4] EVOLUTION LAWS OF GLOBAL HEXAH VARIALBES
 C     [4.1]   PERMANENT SOFTENING VARIABLE
-      DPLAS=DEL_EQPLAS*DFDS
+      DPLAS=DEL_EPLAS*DFDS
       CALL DEVIATORIC_TRANS(DEV_AUX, DPLAS, 1)
       CALL NORM_TENS(DEV_AUX,NDIM4,DPLAS0)
       CALL DEVIATORIC_TRANS(DEV_AUX, PLAS, 1)
@@ -3070,14 +2803,14 @@ C          DEL_GP=MAX(DEL_GP_TEM,DEL_GP_LIM)
       ELSE
           DEL_GP=0.D0
       END IF
-      GP=GP+DEL_GP*DEL_EQPLAS
+      GP=GP+DEL_GP*DEL_EPLAS
 C     [4.2]   LATENT HARDENING VARIABLES
       IF(NSS .GT. 1) THEN
 C         [2.6.1] LATENT HARDENING RATE
           XRL=DEXP(XEL)/(DEXP(XEL)-1.D0)
 C         [2.6.2] AMOUNT OF LATENT HARDENING
 C         (1) WEIGHT 1
-          W_EI=(EQPLASI(NSS)-EQPLASI(NSS-1))/XDEL
+          W_EI=(EPLASI(NSS)-EPLASI(NSS-1))/XDEL
 C         (2) WEIGHT 2
           SIN_X=DSQRT(1.D0-COS_X(NSS-1)*COS_X(NSS-1))
           SIN_XMAX=DSIN(XI_MAX)
@@ -3087,8 +2820,8 @@ C         (2) WEIGHT 2
 C         (2) L
           XL= W_EI*W_XI*(XTL-1.D0)*(XRL/(XRL-1.D0))**(XRL-1.D0)
 C         [2.6.3] STATE VARIABLE UPDATE
-          DEQPLAS=EQPLAS-EQPLASI(NSS)
-          GL=1.D0+XL*XRL*DEXP(-XRL*DEQPLAS)*(DEXP(DEQPLAS)-1.D0)
+          DEPLAS=EPLAS-EPLASI(NSS)
+          GL=1.D0+XL*XRL*DEXP(-XRL*DEPLAS)*(DEXP(DEPLAS)-1.D0)
       ELSE
           GL=1.D0
       END IF
@@ -3128,7 +2861,7 @@ C             #   MICROSTRUCTURE DEVIATOR MATRIX
                   DEV_HM(INDX,I)=DEV_H(N,I)
               END DO
 C             #   EQUIVALENT STRAIN MATRIX
-              EQPLASIM(INDX)=EQPLASI(N)
+              EPLASIM(INDX)=EPLASI(N)
 C             #   STRAIN PATH CHANGE PARAMETER MATRIX
               COS_XM(INDX)=COS_X(N)
               INDX=INDX+1
@@ -3156,14 +2889,14 @@ C     #   LOCAL MICROSTRUCTURE DEVIATOR
               STAT_VAR(NDIM+NDIM5+I)=DEV_HM(N,I)
           END DO
 C     #   LOCAL EQUIVALENT PLASTIC STRAIN
-          STAT_VAR(NDIM+NDIM5+NDIM4+1)=EQPLASIM(N)
+          STAT_VAR(NDIM+NDIM5+NDIM4+1)=EPLASIM(N)
 C     #   LOCAL STRAIN PATH CHANGE PARAMETER
           STAT_VAR(NDIM+NDIM5+NDIM4+2)=COS_XM(N)
       END DO
       RETURN
       END SUBROUTINE UPDATE_HEXAH0
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_HEXAH1(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_HEXAH1(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
 C     #   THIS SUBROUTINE UPDATES THE HARDENING STATE VARIABLES OF HEXAH (MODIFIED)
 C     #   A CRITERION FOR RECYCLE OF PRE-ACTIVATED SLIP SYSTEM
       IMPLICIT REAL*8(A-H, O-Z)
@@ -3172,11 +2905,11 @@ C     #   A CRITERION FOR RECYCLE OF PRE-ACTIVATED SLIP SYSTEM
       DIMENSION DEV_SIG(NDIM4), DEV_S(NDIM4), DFDS(NDIM3), 
      1          DDFDDS(NDIM3,NDIM3), DEL_G(NDIM5), DEL_DEV_H(NDIM4), 
      2          DPLAS(NDIM3), PLAS0(NDIM3), DPLAS0(NDIM3), IDSS(MSS+1),
-     3          GM(MSS+1,NDIM5), DEV_HM(MSS+1,NDIM4), EQPLASIM(MSS+1)
+     3          GM(MSS+1,NDIM5), DEV_HM(MSS+1,NDIM4), EPLASIM(MSS+1)
 C     GLOBAL STATE VARIABLES
       DIMENSION PLAS(NDIM3)
 C     LOCAL STATE VARIABLES
-      DIMENSION G(MSS+1,NDIM5), DEV_H(MSS+1,NDIM4), EQPLASI(MSS+1)
+      DIMENSION G(MSS+1,NDIM5), DEV_H(MSS+1,NDIM4), EPLASI(MSS+1)
 
       COMMON /KSIZE/ NDIM1, NDIM2, NDIM3, NDIM4, NDIM5, NDIM6, NDIM7
       COMMON /KAHARD/ H1, H2, H3, H4, H5, H6, H7, H8, H9, H10, H11
@@ -3208,7 +2941,7 @@ C     #   LOCAL MICROSTRUCTURE DEVIATOR
               DEV_H(N,I)=STAT_VAR(NDIM+NDIM5+I)
           END DO
 C     #   LOCAL EQUIVALENT PLASTIC STRAIN
-          EQPLASI(N)=STAT_VAR(NDIM+NDIM5+NDIM4+I)
+          EPLASI(N)=STAT_VAR(NDIM+NDIM5+NDIM4+I)
       END DO
 C     [1] PREREQUISITES
 C      XI_MAX=PI/3.D0
@@ -3217,7 +2950,7 @@ C      XI_MAX=PI/3.D0
       COS_XMAX=DCOS(XI_MAX)
       CALL DEVIATORIC(SIG, DEV_SIG)
       CALL NORM_HAH(DEV_SIG, DEV_S)
-      CALL FLOW_STRESS(STAT_VAR, EQPLAS, FLOW_SIG, DHDE)
+      CALL FLOW_STRESS(STAT_VAR, EPLAS, FLOW_SIG, DHDE)
       CALL GRAD(2,1,STAT_VAR,SIG,DFDS,DDFDDS)
       DEL_G=0.D0
 C-----------------------------------------------------------------------
@@ -3230,7 +2963,7 @@ C         [2.1.1] ACTIVATION OF NEW SLIP SYSTEM
               NSS=NSS+1
               IASS=NSS ! INDEX FOR ACTIVATED SLIP SYSTEM
               DEV_H(NSS,:)=DEV_S ! SPAWN
-              EQPLASI(NSS)=EQPLAS
+              EPLASI(NSS)=EPLAS
 C         [2.1.2] REACTIVATION OF EXISTING SLIP SYSTEM
           ELSEIF(DABS(COS_X).GE.COS_XMAX) THEN
               IASS=I
@@ -3271,10 +3004,10 @@ C     [3.3B]   CROSS-LOADING CONTRACTION VARIABLES
       END IF
 
 C     [3.4]   UPDATE LOCAL STATE VARIABLES
-      DEV_H(N,:)=DEV_H(N,:)+DEL_DEV_H*DEL_EQPLAS
-      G(N,1)=G(N,1)+DEL_G(1)*DEL_EQPLAS ! G+
-      G(N,2)=G(N,2)+DEL_G(2)*DEL_EQPLAS ! G-
-      G(N,3)=G(N,3)+DEL_G(3)*DEL_EQPLAS ! GC
+      DEV_H(N,:)=DEV_H(N,:)+DEL_DEV_H*DEL_EPLAS
+      G(N,1)=G(N,1)+DEL_G(1)*DEL_EPLAS ! G+
+      G(N,2)=G(N,2)+DEL_G(2)*DEL_EPLAS ! G-
+      G(N,3)=G(N,3)+DEL_G(3)*DEL_EPLAS ! GC
 C     [3.5]   NUMERICAL CONSTRAINT
       CALL NORM_HAH(DEV_H(N,:), DEV_S)
       DEV_H(N,:)=DEV_S
@@ -3288,7 +3021,7 @@ C     [3.5]   NUMERICAL CONSTRAINT
 C-----------------------------------------------------------------------
 C     [4] EVOLUTION LAWS OF GLOBAL HEXAH VARIALBES
 C     [4.1]   PERMANENT SOFTENING VARIABLE
-      DPLAS=DEL_EQPLAS*DFDS
+      DPLAS=DEL_EPLAS*DFDS
       CALL NORM_TENS(DPLAS,NDIM3,DPLAS0)
       CALL NORM_TENS(PLAS,NDIM3,PLAS0)
       CALL DOUBLE_DOT(-DPLAS0, PLAS0, NDIM3, DEP_EP)
@@ -3299,14 +3032,14 @@ C     [4.1]   PERMANENT SOFTENING VARIABLE
       ELSE
           DEL_GP=0.D0
       END IF
-      GP=GP+DEL_GP*DEL_EQPLAS
+      GP=GP+DEL_GP*DEL_EPLAS
 C     [4.2]   LATENT HARDENING VARIABLES
       IF(NSS .GT. 1) THEN
 C         [2.6.1] LATENT HARDENING RATE
           XRL=DEXP(XEL)/(DEXP(XEL)-1.D0)
 C         [2.6.2] AMOUNT OF LATENT HARDENING
 C         (1) WEIGHT 1
-          W_EI=(EQPLASI(NSS)-EQPLASI(NSS-1))/XDEL
+          W_EI=(EPLASI(NSS)-EPLASI(NSS-1))/XDEL
 C         (2) WEIGHT 2
           SIN_X=DSQRT(1.D0-COS_X*COS_X)
           SIN_XMAX=DSIN(XI_MAX)
@@ -3316,8 +3049,8 @@ C         (2) WEIGHT 2
 C         (2) L
           XL= W_EI*W_XI*(XTL-1.D0)*(XRL/(XRL-1.D0))**(XRL-1.D0)
 C         [2.6.3] STATE VARIABLE UPDATE
-          DEQPLAS=EQPLAS-EQPLASI(NSS)
-          GL=1.D0+XL*XRL*DEXP(-XRL*DEQPLAS)*(DEXP(DEQPLAS)-1.D0)
+          DEPLAS=EPLAS-EPLASI(NSS)
+          GL=1.D0+XL*XRL*DEXP(-XRL*DEPLAS)*(DEXP(DEPLAS)-1.D0)
       ELSE
           GL=1.D0
       END IF
@@ -3360,7 +3093,7 @@ C             #   MICROSTRUCTURE DEVIATOR MATRIX
                   DEV_HM(INDX,J)=DEV_H(N,I)
               END DO
 C             #   EQUIVALENT STRAIN MATRIX
-              EQPLASIM(INDX)=EQPLASI(N)
+              EPLASIM(INDX)=EPLASI(N)
               INDX=INDX+1
           END IF
       END DO
@@ -3376,13 +3109,13 @@ C     #   LOCAL MICROSTRUCTURE DEVIATOR
               STAT_VAR(NDIM+NDIM5+J)=DEV_HM(N,I)
           END DO
 C     #   LOCAL EQUIVALENT PLASTIC STRAIN
-          STAT_VAR(NDIM+NDIM5+NDIM4+1)=EQPLASIM(N)
+          STAT_VAR(NDIM+NDIM5+NDIM4+1)=EPLASIM(N)
       END DO
 
       RETURN
       END SUBROUTINE UPDATE_HEXAH1
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_CHABOCHE(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_CHABOCHE(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
 C     #   THIS SUBROUTINE UPDATES STATE VARIABLES OF KINEMATIC HARDENING.
       IMPLICIT REAL*8(A-H, O-Z)
       
@@ -3399,24 +3132,24 @@ C     #   THIS SUBROUTINE UPDATES STATE VARIABLES OF KINEMATIC HARDENING.
       IF(H4 .EQ. 0.D0) THEN   ! CHABOCHE1[9]
           HP1= H1
           HP2= H2
-          CALL CB_HARD(EQPLAS, FLOW_SIG, DHDE)
+          CALL CB_HARD(EPLAS, FLOW_SIG, DHDE)
       ELSE                    ! CHABOCHE2[10]
-          CALL CB_HARD(EQPLAS, FLOW_SIG, DHDE)
-          CALL ISO_HARD(STAT_VAR, EQPLAS, FLOW_ISO, DHDE)
-          CALL KINEMATIC_COMPONENT(STAT_VAR,EQPLAS,SIG,DFDE,DDFDEDS)
+          CALL CB_HARD(EPLAS, FLOW_SIG, DHDE)
+          CALL ISO_HARD(STAT_VAR, EPLAS, FLOW_ISO, DHDE)
+          CALL KINEMATIC_COMPONENT(STAT_VAR,EPLAS,SIG,DFDE,DDFDEDS)
           AP=FLOW_ISO-FLOW_SIG
-          HP1= H1*EQPLAS+ H2
+          HP1= H1*EPLAS+ H2
           HP2= (HP1-DFDE)/AP
       END IF
       DEL_ALPHA= HP1*SIG/FLOW_SIG-HP2*ALPHA
       DO I=1, NDIM3
-          STAT_VAR(I)=ALPHA(I)+DEL_ALPHA(I)*DEL_EQPLAS
+          STAT_VAR(I)=ALPHA(I)+DEL_ALPHA(I)*DEL_EPLAS
       END DO
-      SIG= SIG-DEL_ALPHA*DEL_EQPLAS
+      SIG= SIG-DEL_ALPHA*DEL_EPLAS
       RETURN
       END SUBROUTINE UPDATE_CHABOCHE
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_YU(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_YU(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
 C     #   THIS SUBROUTINE UPDATES BACK-STRESS VALUES OF YOSHIDA-UEMORI.
       IMPLICIT REAL*8(A-H, O-Z)
       
@@ -3460,7 +3193,7 @@ C     #   ISOTROPIC HARDENING FOR BOUNDING SURFACE
       IF(FLOW_PAR .EQ. 0.D0) THEN
           DEL_R=H4*(H7-R)
       ELSE
-          CALL YU_HARD(EQPLAS, R, DEL_R)
+          CALL YU_HARD(EPLAS, R, DEL_R)
           DEL_R=0.D0
       END IF
 
@@ -3469,7 +3202,7 @@ C     [1] STAGNATION SURFACE: VON-MISES YIELD FUNCTION
       BETAQ=BETA-Q
       CALL YLD(BETAQ, DEV_BETAQ, STAG_BAR, 1)
 C     [2] STATE VARIALBE INCREMENTS
-      CALL DOUBLE_DOT(BETAQ,DEL_BETA*DEL_EQPLAS,NDIM3,STAG_DOUBLE)! [EQ. 23a][10]
+      CALL DOUBLE_DOT(BETAQ,DEL_BETA*DEL_EPLAS,NDIM3,STAG_DOUBLE)! [EQ. 23a][10]
       IF(STAG_DOUBLE.GT.0.D0) THEN
           ! #ASSUMPTION: STAG_R= STAG_BAR
           STAG_GAMMA=(3.D0/2.D0)*STAG_DOUBLE/STAG_BAR
@@ -3482,17 +3215,17 @@ C         DEL_R=0.D0
       DEL_Q=STAG_MU*(BETAQ)
 c     [3] UPDATE STATE VARIALBES
       DO I=1, NDIM3
-          STAT_VAR(I)         = ALPHA(I)+DEL_ALPHA(I)*DEL_EQPLAS
-          STAT_VAR(NDIM3+I)   = BETA(I)+DEL_BETA(I)*DEL_EQPLAS
-          STAT_VAR(2*NDIM3+I) = Q(I)+DEL_Q(I)*DEL_EQPLAS
-          SIG(I)= SIG(I)-DEL_ALPHA(I)*DEL_EQPLAS
+          STAT_VAR(I)         = ALPHA(I)+DEL_ALPHA(I)*DEL_EPLAS
+          STAT_VAR(NDIM3+I)   = BETA(I)+DEL_BETA(I)*DEL_EPLAS
+          STAT_VAR(2*NDIM3+I) = Q(I)+DEL_Q(I)*DEL_EPLAS
+          SIG(I)= SIG(I)-DEL_ALPHA(I)*DEL_EPLAS
       END DO
-      STAT_VAR(3*NDIM3+1)= R + DEL_R*DEL_EQPLAS
+      STAT_VAR(3*NDIM3+1)= R + DEL_R*DEL_EPLAS
 
       RETURN
       END SUBROUTINE UPDATE_YU
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_RGBV(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_RGBV(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
 C     # THIS SUBROUTINE FOLLOWS THE DISLOCATION EVOLUTION LAWS BY K. KITAYAMA'S WORK [16].
       IMPLICIT REAL*8(A-H, O-Z)
       DIMENSION STAT_VAR(NDIM6),SIG(NDIM3),DEV_SIG(NDIM4),H(3),PSIG(3)
@@ -3543,9 +3276,9 @@ C     # UPDATE DISLOCATION DENSITY
           RHO_F02=RHO_TOT
           XX=(RHO_R2/RHO_TOT)**0.5D0
       END IF
-      RHO_F=RHO_F+DEL_RHOF*DABS(DEL_EQPLAS)
-      RHO_R1=RHO_R1+DEL_RHOR1*DABS(DEL_EQPLAS)
-      RHO_R2=RHO_R2+DEL_RHOR2*DABS(DEL_EQPLAS)
+      RHO_F=RHO_F+DEL_RHOF*DABS(DEL_EPLAS)
+      RHO_R1=RHO_R1+DEL_RHOR1*DABS(DEL_EPLAS)
+      RHO_R2=RHO_R2+DEL_RHOR2*DABS(DEL_EPLAS)
       RHO_TOT=RHO_F+RHO_R1+RHO_R2
       RHO_RTOT=RHO_R1+RHO_R2
       DRDE=DEL_RHOF+DEL_RHOR1+DEL_RHOR2
@@ -3554,7 +3287,7 @@ C      XX=STAT_VAR(NDIM7-NDIM8+9)
 C      TAU=P2+P3*P4*P5*DSQRT(RHO_TOT)
 C      XXS=P10*(TAU-P2)
 C      DEL_XX=P11*(XXS-XX)
-C      XX=XX+DEL_XX*DABS(DEL_EQPLAS)
+C      XX=XX+DEL_XX*DABS(DEL_EPLAS)
 C     # UPDATE STATE VARIABLE
       STAT_VAR(NDIM7-NDIM8+1)=RHO_F
       STAT_VAR(NDIM7-NDIM8+2)=RHO_R1
@@ -3568,7 +3301,7 @@ C     # UPDATE STATE VARIABLE
       RETURN
       END SUBROUTINE UPDATE_RGBV
 C-----------------------------------------------------------------------
-      SUBROUTINE UPDATE_HARD_VAR(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+      SUBROUTINE UPDATE_HARD_VAR(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
       IMPLICIT REAL*8(A-H, O-Z)
       DIMENSION STAT_VAR(NDIM6), SIG(NDIM3)
       COMMON /KOPTION/ HARD_PAR, YLD_PAR, FLOW_PAR, SUA_PAR, GRAD_PAR
@@ -3576,26 +3309,323 @@ C-----------------------------------------------------------------------
 
 C     # UPDATE ANISOTROPIC HARDENING MODEL
       IF(HARD_PAR .EQ. 1.D0) THEN ! CHABOCHE
-          CALL UPDATE_CHABOCHE(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+          CALL UPDATE_CHABOCHE(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
       ELSEIF(HARD_PAR .EQ. 2.D0) THEN ! YOSHIDA-UEMORI
-          CALL UPDATE_YU(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+          CALL UPDATE_YU(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
       ELSEIF(HARD_PAR .EQ. 3.D0) THEN ! HAH11
-          CALL UPDATE_HAH11(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+          CALL UPDATE_HAH11(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
       ELSEIF(HARD_PAR .EQ. 4.D0) THEN ! HAH14
-          CALL UPDATE_HAH14(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+          CALL UPDATE_HAH14(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
       ELSEIF(FLOOR(HARD_PAR) .EQ. 5.D0) THEN ! HAH20
-          CALL UPDATE_HAH20(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+          CALL UPDATE_HAH20(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
       ELSEIF(FLOOR(HARD_PAR) .EQ. 6.D0) THEN ! HEXAH
-          CALL UPDATE_HEXAH0(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+          CALL UPDATE_HEXAH0(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
       END IF
       
 C     # UPDATE DISLOCATION HARDENING MODEL
       IF(FLOW_PAR.EQ.7.D0) THEN
-          CALL UPDATE_RGBV(STAT_VAR, EQPLAS, SIG, DEL_EQPLAS)
+          CALL UPDATE_RGBV(STAT_VAR, EPLAS, SIG, DEL_EPLAS)
       END IF
 
       RETURN
       END SUBROUTINE UPDATE_HARD_VAR
+C-----------------------------------------------------------------------
+      SUBROUTINE READ_STATEV(STATEV, STAT_VAR, SIG)
+C     THOS SUBROUTINE READS INTERNAL HARDENING STATE VARIABLES.
+      IMPLICIT REAL*8(A-H, O-Z)
+      DIMENSION STATEV(NSTATV), STAT_VAR(NDIM6), SIG(NDIM3)
+      DIMENSION DEV_H0(NDIM4), DEV_SIG(NDIM4)
+      COMMON /KUMAT/ NPROPS, NSTATV, NTENS, NDATA
+      COMMON /KOPTION/ HARD_PAR, YLD_PAR, FLOW_PAR, SUA_PAR, GRAD_PAR
+      COMMON /KSIZE/ NDIM1, NDIM2, NDIM3, NDIM4, NDIM5, NDIM6, NDIM7
+
+C     [1] READ EFFECTIVE STRAIN
+      EPLAS=STATEV(2)
+C     [2]
+      IF(EPLAS .EQ. 0.D0) THEN
+          IF(HARD_PAR .EQ. 1.D0) THEN ! CHABOCHE
+              STAT_VAR= 0.D0
+          ELSEIF(HARD_PAR .EQ. 2.D0) THEN ! YOSHIDA-UEMORI
+              STAT_VAR= 0.D0
+          ELSEIF(HARD_PAR .EQ. 3.D0) THEN ! HAH11
+C         #   G-VALUES
+              STAT_VAR(1:NDIM5)=1.D0
+C         #   DEV_H
+              CALL DEVIATORIC(SIG, DEV_SIG)
+              CALL NORM_HAH(DEV_SIG, DEV_H0)
+              DO I=1, NDIM4
+                  STAT_VAR(NDIM5+I)=DEV_H0(I)
+              END DO
+          ELSEIF(HARD_PAR .EQ. 4.D0) THEN ! HAH14
+C         #   G-VALUES
+              STAT_VAR(1:NDIM5)=1.D0
+C         #   DEV_H
+              CALL DEVIATORIC(SIG, DEV_SIG)
+              CALL NORM_HAH(DEV_SIG, DEV_H0)
+              DO I=1, NDIM4
+                  STAT_VAR(NDIM5+I)=DEV_H0(I)
+              END DO
+          ELSEIF(FLOOR(HARD_PAR) .EQ. 5.D0) THEN ! HAH20
+C         #   G-VALUES
+              STAT_VAR(1:NDIM5)= 1.D0
+              CALL DEVIATORIC(SIG, DEV_SIG)
+              CALL NORM_HAH(DEV_SIG, DEV_H0)
+              DO I=1, NDIM4
+C         #   DEV_H
+                  STAT_VAR(NDIM5+I)=DEV_H0(I)
+C         #   DEV_HP
+                  STAT_VAR(NDIM5+NDIM4+I)=DEV_H0(I)
+C         #   DEV_HS
+                  STAT_VAR(NDIM5+2*NDIM4+I)=DEV_H0(I)
+              END DO
+          ELSEIF(FLOOR(HARD_PAR) .EQ. 6.D0) THEN ! HEXAH
+C         [1] GLOBAL STATE VARIABLES
+              NDIM0=7
+C         #   GLOBAL G-VALUES
+              STAT_VAR(1:2)=1.D0
+C         #   NSS: NUMBER OF ACTIVATED SLIP SYSTEMS
+              NSS=1
+              STAT_VAR(3)= NSS
+C         #   PLASTIC STRAIN: PLAS
+              DO I=1,NDIM3
+                  STAT_VAR(3+I)=0.D0
+              END DO
+C         [2] LOCAL STATE VARIABLES
+              CALL DEVIATORIC(SIG, DEV_SIG)
+              CALL NORM_HAH(DEV_SIG, DEV_H0)
+              DO N=1, NSS
+                  NDIM =3+NDIM3+(N-1)*(NDIM5+NDIM4+2)
+                  NDIM0=7+3+6+(N-1)*(NDIM5+6+2) ! 16+X
+C         #   LOCAL G-VALUES
+                  DO I=1,NDIM5
+                      STAT_VAR(NDIM+I)=1.D0
+                  END DO
+C         #   LOCAL MICROSTRUCTURE DEVIATOR
+                  DO I=1,NDIM4
+                      STAT_VAR(NDIM+NDIM5+I)=DEV_H0(I)
+                  END DO
+C         #   LOCAL EQUIVALENT PLASTIC STRAIN
+                  STAT_VAR(NDIM+NDIM5+NDIM4+1)=0.D0
+C         #   LOCAL STRAIN PATH CHANGE PARAMETER
+                  STAT_VAR(NDIM+NDIM5+NDIM4+2)=1.D0
+              END DO
+          END IF
+      ELSE
+          NDIM0=12
+          IF(HARD_PAR .EQ. 1.D0) THEN     ! CHABOCHE
+              DO I=1, NDIM3
+                  STAT_VAR(I)=STATEV(NDIM0+I)
+              END DO
+          ELSEIF(HARD_PAR .EQ. 2.D0) THEN ! YOSHIDA-UEMORI
+              DO I=1, NDIM3
+                  STAT_VAR(I)         =STATEV(NDIM0+I)
+                  STAT_VAR(NDIM3+I)   =STATEV(NDIM0+6+I)
+                  STAT_VAR(2*NDIM3+I) =STATEV(NDIM0+12+I)
+              END DO
+              STAT_VAR(3*NDIM3+1)=STATEV(NDIM0+18+1)
+          ELSEIF(HARD_PAR .EQ. 3.D0) THEN ! HAH11
+C         #   G-VALUES
+              STAT_VAR(1:NDIM5)=STATEV(NDIM0+1:NDIM0+NDIM5)
+C         #   DEV_H
+              DO I=1, NDIM4
+                  STAT_VAR(NDIM5+I)=STATEV(NDIM0+NDIM5+I)
+              END DO
+          ELSEIF(HARD_PAR .EQ. 4.D0) THEN ! HAH14
+C         #   G-VALUES
+              STAT_VAR(1:NDIM5)=STATEV(NDIM0+1:NDIM0+NDIM5)
+C         #   DEV_H
+              DO I=1, NDIM4
+                  STAT_VAR(NDIM5+I)=STATEV(NDIM0+NDIM5+I)
+              END DO
+          ELSEIF(FLOOR(HARD_PAR) .EQ. 5.D0) THEN ! HAH20
+C         #   G-VALUES
+              STAT_VAR(1:NDIM5)= STATEV(NDIM0+1:NDIM0+NDIM5)
+C
+              DO I=1, NDIM4
+C         #   DEV_H
+                  STAT_VAR(NDIM5+I)           =STATEV(NDIM0+NDIM5+I)
+C         #   DEV_HP
+                  STAT_VAR(NDIM5+NDIM4+I)     =STATEV(NDIM0+NDIM5+6+I)
+C         #   DEV_HS
+                  STAT_VAR(NDIM5+2*NDIM4+I)   =STATEV(NDIM0+NDIM5+12+I)
+              END DO
+          ELSEIF(FLOOR(HARD_PAR) .EQ. 6.D0) THEN ! HEXAH
+C         [1] GLOBAL STATE VARIABLES
+C         #   GLOBAL G-VALUES
+              STAT_VAR(1:2)=STATEV(NDIM0+1:NDIM0+2)
+C         #   NSS: NUMBER OF ACTIVATED SLIP SYSTEMS
+              STAT_VAR(3)= STATEV(NDIM0+3)
+              NSS=IDINT(STAT_VAR(3))
+C         #   PLASTIC STRAIN: PLAS
+              DO I=1,NDIM3
+                  STAT_VAR(3+I)=STATEV(NDIM0+3+I)
+              END DO
+C         [2] LOCAL STATE VARIABLES
+              DO N=1, NSS
+                  NDIM =3+NDIM3+(N-1)*(NDIM5+NDIM4+2)
+                  NDIM0=7+3+6+(N-1)*(NDIM5+6+2) ! 16+X
+C         #   LOCAL G-VALUES
+                  DO I=1,NDIM5
+                      STAT_VAR(NDIM+I)=STATEV(NDIM0+I)
+                  END DO
+C         #   LOCAL MICROSTRUCTURE DEVIATOR
+                  DO I=1,NDIM4
+                      STAT_VAR(NDIM+NDIM5+I)=STATEV(NDIM0+NDIM5+I)
+                  END DO
+C         #   LOCAL EQUIVALENT PLASTIC STRAIN
+                  STAT_VAR(NDIM+NDIM5+NDIM4+1)=STATEV(NDIM0+NDIM5+6+1)
+C         #   LOCAL STRAIN PATH CHANGE PARAMETER
+                  STAT_VAR(NDIM+NDIM5+NDIM4+2)=STATEV(NDIM0+NDIM5+6+2)
+              END DO
+          END IF
+      END IF
+C     [4] READ STATE VARIABLES OF DISLOCATION-BASED HARDENING MODEL
+      IF(EPLAS .EQ. 0.D0) THEN
+          IF(FLOW_PAR .EQ. 7.D0) THEN ! RGBV
+              RHO0=P10
+              STAT_VAR(NDIM6-NDIM7+1)=RHO0 !RHO_F
+              STAT_VAR(NDIM6-NDIM7+2)=0.D0 !RHO_R1
+              STAT_VAR(NDIM6-NDIM7+3)=0.D0 !RHO_R2
+              STAT_VAR(NDIM6-NDIM7+4)=0.D0 !RHO_L
+              STAT_VAR(NDIM6-NDIM7+5)=RHO0 !RHO_F01
+              STAT_VAR(NDIM6-NDIM7+6)=RHO0 !RHO_F02
+              STAT_VAR(NDIM6-NDIM7+7)=RHO0 !RHO_TOT
+              STAT_VAR(NDIM6-NDIM7+8)=0.D0 !DRDE
+              STAT_VAR(NDIM6-NDIM7+9)=0.D0 !RHO_RTOT (TEMPORARY)
+          END IF
+      ELSE
+          NDIM0=54
+          IF(FLOW_PAR .EQ. 7.D0) THEN ! RGBV
+              DO I=1, NDIM7
+                  STAT_VAR(NDIM6-NDIM7+I)=STATEV(NDIM0+I)
+              END DO
+          END IF
+      END IF
+      
+      RETURN
+      END SUBROUTINE READ_STATEV
+C-----------------------------------------------------------------------
+      SUBROUTINE WRITE_STATEV(STATEV, STAT_VAR, SIG)
+C     THOS SUBROUTINE READS INTERNAL HARDENING STATE VARIABLES.
+      IMPLICIT REAL*8(A-H, O-Z)
+      DIMENSION STATEV(NSTATV), STAT_VAR(NDIM6), SIG(NDIM3)
+      COMMON /KUMAT/ NPROPS, NSTATV, NTENS, NDATA
+      COMMON /KOPTION/ HARD_PAR, YLD_PAR, FLOW_PAR, SUA_PAR, GRAD_PAR
+      COMMON /KSIZE/ NDIM1, NDIM2, NDIM3, NDIM4, NDIM5, NDIM6, NDIM7
+
+C     [1]     STATE VARIALBES OF ANISOTROPIC HARDENING MODELS
+      NDIM0=12
+      IF(HARD_PAR .EQ. 1.D0) THEN ! CHABOCHE
+C         #STATEV(13:18)    : ALPHA
+          DO I=1, NDIM3
+              STATEV(NDIM0+I)= STAT_VAR(I)
+          END DO
+      ELSEIF(HARD_PAR .EQ. 2.D0) THEN ! YOSHIDA-UEMORI
+C         #STATEV(13:18)    : ALPHA
+C         #STATEV(19:24)   : BETA
+C         #STATEV(25:30)   : Q
+C         #STATEV(31)      : R
+C         #STATEV(32)      : STAG_R
+          DO I=1, NDIM3
+              STATEV(NDIM0+I)=STAT_VAR(I)
+              STATEV(NDIM0+6+I)=STAT_VAR(NDIM3+I)
+              STATEV(NDIM0+12+I)=STAT_VAR(2*NDIM3+I)
+          END DO
+          STATEV(NDIM0+18+1)=STAT_VAR(3*NDIM3+1)
+      ELSEIF(HARD_PAR .EQ. 3.D0) THEN ! HAH11
+C         #STATEV(12)      : COS_X
+          CALL COSX(STAT_VAR,SIG,COS_X)
+          STATEV(NDIM0)= COS_X
+C         #STATEV(13:16)    : G-VALUES
+          DO I=1, NDIM5
+              STATEV(NDIM0+I)=STAT_VAR(I)
+          END DO
+C         #STATEV(17:22)  : DEV_H
+          DO I=1, NDIM4
+              STATEV(NDIM0+NDIM5+I)=STAT_VAR(NDIM5+I)
+          END DO
+      ELSEIF(HARD_PAR .EQ. 4.D0) THEN ! HAH14
+C         #STATEV(12)      : COS_X
+          CALL COSX(STAT_VAR,SIG,COS_X)
+          STATEV(NDIM0)= COS_X
+C         #STATEV(13:18)    : G-VALUES
+          DO I=1, NDIM5
+              STATEV(NDIM0+I)=STAT_VAR(I)
+          END DO
+C         #STATEV(19:24)  : DEV_H
+          DO I=1, NDIM4
+              STATEV(NDIM0+NDIM5+I)=STAT_VAR(NDIM5+I)
+          END DO
+      ELSEIF(FLOOR(HARD_PAR) .EQ. 5.D0) THEN ! HAH20
+C         #STATEV(12)      : COS_X
+          CALL COSX(STAT_VAR,SIG,COS_X)
+          STATEV(NDIM0)= COS_X
+C         #STATEV(13:22)   : G-VALUES
+          DO I=1, NDIM5
+              STATEV(NDIM0+I)=STAT_VAR(I)
+          END DO
+C         #STATEV(23:28)  : DEV_H
+C         #STATEV(29:34)  : DEV_HP
+C         #STATEV(35:40)  : DEV_HS
+          DO I=1, NDIM4
+              STATEV(NDIM0+NDIM5+I)   =STAT_VAR(NDIM5+I)
+              STATEV(NDIM0+NDIM5+6+I) =STAT_VAR(NDIM5+NDIM4+I)
+              STATEV(NDIM0+NDIM5+12+I)=STAT_VAR(NDIM5+2*NDIM4+I)
+          END DO
+      ELSEIF(FLOOR(HARD_PAR) .EQ. 6.D0) THEN ! HEXAH
+C         #STATEV(12)      : COS_X
+          CALL COSX(STAT_VAR,SIG,COS_X)
+          STATEV(NDIM0)= COS_X
+C         [1] GLOBAL STATE VARIABLES
+C         #   GLOBAL G-VALUES: GP/GL
+          STATEV(NDIM0+1:NDIM0+2)=STAT_VAR(1:2)
+C         #   NSS: NUMBER OF ACTIVATED SLIP SYSTEMS
+          STATEV(NDIM0+3)=STAT_VAR(3)
+          NSS=IDINT(STAT_VAR(3))
+C         #   PLASTIC STRAIN: PLAS=PLAS+DEPLAS*DFDS
+          DO I=1,NDIM3
+              STATEV(NDIM0+3+I)=STAT_VAR(3+I)
+          END DO
+C         [2] LOCAL STATE VARIABLES
+          DO N=1, NSS
+              NDIM =NDIM3+3+(N-1)*(NDIM5+NDIM4+2)
+              NDIM0=7+3+6+(N-1)*(NDIM5+6+2)
+C         #   LOCAL G-VALUES
+              DO I=1,NDIM5
+                  STATEV(NDIM0+I)=STAT_VAR(NDIM+I)
+              END DO
+C         #   LOCAL MICROSTRUCTURE DEVIATOR
+              DO I=1,NDIM4
+                  STATEV(NDIM0+NDIM5+I)=STAT_VAR(NDIM+NDIM5+I)
+              END DO
+C         #   LOCAL EQUIVALENT PLASTIC STRAIN
+              STATEV(NDIM0+NDIM5+6+1)=STAT_VAR(NDIM+NDIM5+NDIM4+1)
+C         #   LOCAL STRAIN PATH CHANGE PARAMETER
+              STATEV(NDIM0+NDIM5+6+2)=STAT_VAR(NDIM+NDIM5+NDIM4+2)
+          END DO
+      ELSEIF(HARD_PAR .EQ. 0.D0) THEN ! ISOTROPIC HARDENING
+          STATEV(12:54)=0.D0
+      END IF
+C     [2]     STATE VARIALBES OF DISLOACTION HARDENING MODELS
+      NDIM0=54
+      IF(FLOW_PAR .EQ. 7.D0) THEN
+C         # STATE VARIABLE OF RGBV #
+C         STATEV(55): RHO_F
+C         STATEV(56): RHO_R1
+C         STATEV(57): RHO_R2
+C         STATEV(58): RHO_L
+C         STATEV(59): RHO_F01
+C         STATEV(60): RHO_F02
+C         STATEV(61): RHO_TOT
+C         STATEV(62): DRDE
+C         STATEV(63): RHO_RTOT
+          DO I=1,NDIM7
+              STATEV(NDIM0+I)=STAT_VAR(NDIM6-NDIM7+I)
+          END DO
+      END IF
+      
+      RETURN
+      END SUBROUTINE WRITE_STATEV
 C-----------------------------------------------------------------------
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C                                                                      C
@@ -4006,7 +4036,7 @@ C     SUB.8   OPERATORS                                                C
 C                                                                      C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C-----------------------------------------------------------------------
-      SUBROUTINE EFF_STR(DPLAS, DFDS, D_EQPLAS)
+      SUBROUTINE EFF_STR(DPLAS, DFDS, DEPLAS)
 C     #   THIS SUBROUTINE CALCULATES DIRECTLY THE EFFECTIVE PLASTIC STRAIN.
       IMPLICIT REAL*8 (A-H,O-Z)
       DIMENSION DPLAS(NDIM3), DFDS(NDIM3)
@@ -4019,7 +4049,7 @@ C     [2] SCALAR PRODUCT OF THE VARIABLES
       CALL DOUBLE_DOT(DPLAS1, DPLAS1, NDIM4, DOUBLE_DPLAS)
       CALL DOUBLE_DOT(DFDS1, DFDS1, NDIM4, DOUBLE_DFDS)
 C     [3] THE EFFECTIVE PLASTIC STRAIN INCREMENT
-      D_EQPLAS=DSQRT(DOUBLE_DPLAS/DOUBLE_DFDS)
+      DEPLAS=DSQRT(DOUBLE_DPLAS/DOUBLE_DFDS)
       RETURN
       END SUBROUTINE EFF_STR
 C-----------------------------------------------------------------------
@@ -4300,11 +4330,10 @@ C
          END DO
 
          IF (AAMAX.EQ.0.D0) THEN
-             WRITE(*, *) '#####################'
-             WRITE(*, *) '## SINGULAR MATRIX ##'
-             WRITE(*, *) '#####################'
-
-             STOP
+C             WRITE(*, *) '#####################'
+C             WRITE(*, *) '## SINGULAR MATRIX ##'
+C             WRITE(*, *) '#####################'
+C             STOP
          END IF
          VV(I)=1.D0/AAMAX
       END DO

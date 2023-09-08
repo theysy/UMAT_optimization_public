@@ -28,8 +28,7 @@ tic
 %    mex -g MML_UMAT.f
 %%  Identification opt_par: Read PROPS.csv
 
-props=csvread('props_EDDQ.csv');
-% props=csvread('props.csv');
+props=csvread('PROPS_CR980XG3_HAH20CR.csv');
 optparam.props=props;
 %%   SET optimization parameters
 % initial guess for Hardening models
@@ -64,15 +63,20 @@ elseif props(1)==3
 % [4] HAH14
 elseif props(1)==4
     X=[0.788, 65, 1.22, 18]; % C, KC, L, KL
-%     lb=[50 50 0.3 0.8 1.0];
-%     ub=[200 200 1.0 1.0 30];
+     lb=[0.4 100  1.0 0.0];
+     ub=[1.0 200 1.0 0.0];
+     X=(lb+ub)./2;
+    X=props(28:31);
     lb=X;
     ub=X;
 % [5] HAH20
 elseif floor(props(1))==5
 %     X=[1.0, 65, 1.4, 450]; % C, KC, L, KL
-%      lb=[1.0 65 1.0 0.1];
-%      ub=[1.0 65 2.0 950.0];
+%     lb=[0.1 010 010 6.0];
+%     ub=[1.0 100 100 6.0];
+    lb=[0.2 010];
+    ub=[1.0 100];
+    X=(lb+ub)./2;
     X=props(28:31);
     lb=X;
     ub=X;
@@ -85,15 +89,30 @@ else
     optparam.ntens=3;
 end
 optparam.nstatv=70;
-optparam.dt=1e-4;
+optparam.dt=1e-3;
 optparam.xdim=xdim;
 optparam.lb=lb;
 optparam.ub=ub;
 optparam.weight(1)= 2.0;
 optparam.weight(2)= 1.0;
-% optparam.filemat{1} = 'EXP_RD45T';
-optparam.filemat{1} = 'EDDQ-TDT-RD45T';
-optparam.filemat{2} = 'EDDQ-TDT-RDT';
+optparam.filemat{1} = 'CR980XG3_RDT15_RD90T';
+% optparam.filemat{2} = 'CR980XG3_RDT15_RD45T';
+% optparam.filemat{3} = 'CR980XG3_RDT15_RD90T';
+
+% optparam.filemat{1} = 'CR980XG3_RDT5_RD45T';
+% optparam.filemat{2} = 'CR980XG3_RDT10_RD45T';
+% optparam.filemat{3} = 'CR980XG3_RDT15_RD45T';
+
+
+% optparam.filemat{1} = 'CR980XG3_RDT5_RDT';
+% optparam.filemat{2} = 'CR980XG3_RDT5_RD45T';
+% optparam.filemat{3} = 'CR980XG3_RDT5_RD90T';
+% optparam.filemat{4} = 'CR980XG3_RDT10_RDT';
+% optparam.filemat{5} = 'CR980XG3_RDT10_RD45T';
+% optparam.filemat{6} = 'CR980XG3_RDT10_RD90T';
+% optparam.filemat{7} = 'CR980XG3_RDT15_RDT';
+% optparam.filemat{8} = 'CR980XG3_RDT15_RD45T';
+% optparam.filemat{9} = 'CR980XG3_RDT15_RD90T';
 optparam.mode=12; % Path change (cross-loading)
 optparam.optalg=1; % 1: Nelder-Mead | 2: Genetic | 3: Pattensearch | 4: Globalsearch
 if optparam.optalg==1 || optparam.optalg==4

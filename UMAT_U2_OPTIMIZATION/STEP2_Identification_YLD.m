@@ -26,7 +26,7 @@ addpath 'UMAT_props'
 %%   Compilation of UMAT subroutine using MEX.
 %    mex -g MML_UMAT.f
 %%  Identification opt_par: Read PROPS.csv
-props=csvread('props_AA2090_yld2k.csv');
+props=csvread('props_AA2090_yld2k4.csv');
 optparam.props=props;
 %%   SET plasticity model parameters
 % initial guess for Anisotropic yield function
@@ -63,7 +63,6 @@ if props(2)==4 || props(2)==1
 else
     optparam.ntens=3;
 end
-optparam.ntens=3;
 optparam.nstatv=70;
 % optparam.dt=2.5e-3;
 optparam.dt=1e-3;

@@ -1,16 +1,24 @@
-function [tens4] = trans_principal(tens1, iopt)
+function [tens4] = trans_principal(varargin)
 % This function transforms stress tensor into principal stress tensors.
-% iopt=1: Tensor -> Principal tensor
-% iopt=2: Correction: Tensor -> Principal tensor -> Tensor
-% itens=1: Strain | itens=2: Stress
-itens=2;
+% iopt1=1: Tensor -> Principal tensor
+% iopt1=2: Correction: Tensor -> Principal tensor -> Tensor
+% iopt2=1: Strain | itens=2: Stress
+if nargin==2
+    tens1=varargin{1};
+    iopt1=varargin{2};
+    itens=2;
+elseif nargin==3
+    tens1=varargin{1};
+    iopt1=varargin{2};
+    itens=varargin{3};
+end
 ntens=max(size(tens1));
 if ntens==3
     ndi=2;
 else
     ndi=3;
 end
-if iopt==1 % Tensor -> Principal tensor
+if iopt1==1 % Tensor -> Principal tensor
     tens2= trans_voigt(tens1,ntens,1,itens); % Vec -> Tensor
     tens3= eig(tens2);
     tens4= sort(tens3, 'descend');

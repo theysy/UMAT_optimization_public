@@ -34,17 +34,17 @@ gap=0;
 if mode==11
 %--------------------------------------------------------------------------
 % [1.0] DEFINE PROPS
-if props(1)==0
+if props(1)==0 % Isotropic hardening
     props(9:9+xdim-1)=X;
-elseif props(1)==1
+elseif props(1)==1 % Chaboche
     props(21:21+xdim-1)=X;
-elseif floor(props(1))==2
+elseif floor(props(1))==2 % Yoshida-Uemori
     props(21:21+xdim-1)=X;
-elseif props(1)==3
+elseif props(1)==3 % HAH11
     props(23:23+xdim-1)=X;
-elseif props(1)==4
-    props(22:22+xdim-1)=X;
-elseif floor(props(1))==5
+elseif props(1)==4 % HAH14
+    props(23:23+xdim-1)=X;
+elseif floor(props(1))==5 % HAH20
     props(23:23+xdim-1)=X;
 end
 
@@ -94,18 +94,18 @@ for k=1:nsim % Number of simulations
 %--------------------------------------------------------------------------
 % [1.2] Run UMAT subroutine
     statev=zeros([1,nstatv]);
-    [strainUMAT, stressUMAT]=UMAT_MEX(props, statev, dstran, ang, s);
+    [strainUMAT, stressUMAT, statevUMAT]=UMAT_MEX(props, statev, dstran, ang, s);
     % Global -> Local coordinate system
     for i=1:time
         strainUMAT(i,:)=rotmat(-ang, strainUMAT(i,:),1);
         stressUMAT(i,:)=rotmat(-ang, stressUMAT(i,:),2);
     end
-    [stressSIM0, indx]=unique(stressUMAT(:,1), 'stable');
+    [stressSIM0, indx]=unique(stressUMAT(:,rindx), 'stable');
     stressSIM=zeros(size(stressSIM0));
     strainSIM=zeros(size(stressSIM0));
     for i=1:size(indx,1)
-        stressSIM(i)=stressUMAT(indx(i),1);
-        strainSIM(i)=strainUMAT(indx(i),1);
+        stressSIM(i)=stressUMAT(indx(i),rindx);
+        strainSIM(i)=strainUMAT(indx(i),rindx);
     end
 %--------------------------------------------------------------------------
 % [1.3] Descretize the simulation results
@@ -135,33 +135,47 @@ for k=1:nsim % Number of simulations
             SIMdata{n,k}(:,2)= interp1(strainSIM(indx(n-1):indx(n)),stressSIM(indx(n-1):indx(n)),EXPdata{n,k}(:,1));
         end
 % [1.5] Calculation of statistical error
-        npoints= round(max(size(SIMdata{n,k}))*0.3,0);
-        gap2(n)= weight(1)*cal_error(EXPdata{n,k}(3:end-2,2),SIMdata{n,k}(3:end-2,2),error_par);
-        gap2(end)=weight(2)*cal_error(EXPdata{n,k}(end-npoints+1:end,2),SIMdata{n,k}(end-npoints+1:end,2),error_par); % End points
+        npoint= round(max(size(SIMdata{n,k}))*0.35,0);
+        endpoint=round(max(size(SIMdata{n,k}))*0.1,0);
+        gap2(n)= weight(1)*cal_error(EXPdata{n,k}(3:npoint,2),SIMdata{n,k}(3:npoint,2),error_par);
+        gap2(end)=weight(2)*cal_error(EXPdata{n,k}(npoint+1:end,2),SIMdata{n,k}(npoint+1:end,2),error_par); % End points
     end
 
-    weigt2=1/nsim;
+    weigt2=nsim;
     gap=gap+weigt2*(sum(gap2));
 end
 %--------------------------------------------------------------------------
 %   [1.6] Plot the simulation results
 if plotmode==1
-    figure(52)
-    hold off
+    figure(11); set(gcf, 'WindowStyle','docked'); cmap=colormap('lines');
+    set(gcf, 'WindowStyle','docked')
+    hold off; dataNo=50;
+%   Experiment data
     for k=1:nsim
         EXPresult=cat(1,EXPdata{:,k});
-        SIMresult=cat(1,SIMdata{:,k});        
-        plot(EXPresult(:,1),EXPresult(:,2),'.-b') % EXP: 3p
-        if k==1
-            hold on
-            grid on
-        end
-        plot(EXPresult(:,1),SIMresult(:,2),'.-r') % HAH: 3p  
+        ndata=length(EXPresult(:,2));
+        pick=ceil(ndata/dataNo);
+        xarg = EXPresult(1:pick:ndata,1);
+        yarg = EXPresult(1:pick:ndata,2);
+        h1=plot(xarg,yarg,'o','DisplayName',strcat('EXP-',num2str(k))); % Experimental data
+        set(h1, 'color', cmap(1,:));
+        set(h1, 'markerfacecolor', get(h1, 'color'),'markersize', 10);
+        hold on
     end
-    legend('EXP','SIM','Location','Best')
-    axis([min(EXPresult(:,1))*1.1 max(EXPresult(:,1))*1.1 min(EXPresult(:,2))*1.1 max(EXPresult(:,2))*1.1])
+%   Simulation data
+    for k=1:nsim
+        SIMresult=cat(1,SIMdata{:,k}); 
+        h2=plot(SIMresult(:,1),SIMresult(:,2),'-','DisplayName',strcat('SIM-',num2str(k))); % Simulation data
+        if nsim==1
+            set(h2, 'color', cmap(2,:),'linewidth', 4);
+        else
+            set(h2, 'color', cmap(2,:),'linewidth', 4);
+        end
+        hold on
+    end
     xlabel('True strain') % x-axis label
     ylabel('True stress (MPa)') % y-axis label
+    grid on
 end
 end
 %% [2] Cross-loading
@@ -186,10 +200,12 @@ for k=1:nsim % Number of simulations
 %   [2.1] SET UP BOUNDARY CONDITION: DSTRAN
     nstep=size(ang,2);
     for i=1:nstep
-        bc0=bc(i)*1.5;
+%         bc0=bc(i)*1.5;
+        bc0=exp(bc(i))-1;
         dis=linspace(0,bc0,1/dt);
         time= size(dis,2);        
         stran=zeros([time,ntens]);
+        pstran=zeros([time,ntens]);
         stran(1:time,rindx)=dis';
         stran=log(1+stran);
         for m=1:ndi
@@ -215,30 +231,42 @@ for k=1:nsim % Number of simulations
             statev=statevUMAT(indx,:);
         end
         [strainUMAT, stressUMAT, statevUMAT]=UMAT_MEX(props, statev, dstran, ang(i), s);
-        for m=1:time
-            if abs(statevUMAT(m,1)-bc(i)) < 1e-5
-                indx=m;
-                break;
-            else
-                indx=0;
-            end
-        end
+        for n=1:time
+            strainUMAT(n,:)=trans_principal(strainUMAT(n,:),2,1);
+            pstran(n,:)=trans_principal(strainUMAT(n,:),1,1);
+        end 
+%         for m=1:time
+%             if abs(statevUMAT(m,2)-bc(i)) < 3e-5
+%             if abs(pstran(m,1)-bc(i))<1e-5
+%                 indx=m;
+%                 break;
+%             else
+%                 indx=0;
+%             end
+%         end
+        indx=time;
     end
 %--------------------------------------------------------------------------
 %   [2.3] Simulation data post-processing
     % Global -> Local
+    stressSIM0=zeros(size(stressUMAT(1:indx,:)));
+    strainSIM0=zeros(size(strainUMAT(1:indx,:)));
     for i=1:indx
-        stressUMAT(i,:)=trans_principal(stressUMAT(i,:),2);
-        stressSIM0(i,:)=trans_principal(stressUMAT(i,:),1);
+        stressUMAT(i,:)=trans_principal(stressUMAT(i,:),2,2);
+        stressSIM0(i,:)=trans_principal(stressUMAT(i,:),1,2);
+        strainUMAT(i,:)=trans_principal(strainUMAT(i,:),2,1);
+        strainSIM0(i,:)=trans_principal(strainUMAT(i,:),1,1);
     end
     % Filter the redundant data
-    [strainSIM0, indx2]=unique(statevUMAT(1:indx,1),'stable');
-    stressSIM=zeros(size(strainSIM0));
-    strainSIM=zeros(size(strainSIM0));
-    for i=1:size(indx2,1)
-        stressSIM(i)=stressSIM0(indx2(i),1);
-        strainSIM(i)=strainSIM0(i,1);
-    end
+%     [strainSIM0, indx2]=unique(statevUMAT(1:indx,2),'stable');
+%     stressSIM=zeros(size(strainSIM0));
+%     strainSIM=zeros(size(strainSIM0));
+%     for i=1:size(indx2,1)
+%         stressSIM(i)=stressSIM0(i,1);
+%         strainSIM(i)=strainSIM0(i,1);
+%     end
+    stressSIM=stressSIM0(:,1);
+    strainSIM=strainSIM0(:,1)+bc(1);
     if k==1
         EXPdata=cell([1,nsim]);
         SIMdata=cell([1,nsim]);
@@ -254,25 +282,37 @@ for k=1:nsim % Number of simulations
     gap1=weight(1)*cal_error(SIMdata{k}(4:npoints,2),EXPdata{k}(4:npoints,2),error_par); % Early stage of flow curve
     gap2=weight(2)*cal_error(SIMdata{k}(npoints+1:end-5,2),EXPdata{k}(npoints+1:end-5,2),error_par);
  
-    weight3=1/nsim;
+    weight3=k/nsim;
     gap=gap+weight3*(gap1+gap2);
+end
 %--------------------------------------------------------------------------
 %   [2.6] Plot figure for compariosn between experimental and simulation data
 if plotmode==1
-    figure(52);
-    set(gcf, 'Position',  [500, 400, 500*nsim, 400])
-    subplot(1,nsim,k);
-    hold off
-    plot(EXPdata{k}(:,1),EXPdata{k}(:,2),'.-b') % Experimental data
-    hold on
+    figure(11); set(gcf, 'WindowStyle','docked'); cmap=colormap('lines');
+    set(gcf, 'WindowStyle','docked')
+    hold off; dataNo=50;
+%   Experiment data
+    for k=1:nsim
+        EXPresult=EXPdata{k};
+        ndata=length(EXPresult(:,2));
+        pick=ceil(ndata/dataNo);
+        xarg = EXPresult(1:pick:ndata,1);
+        yarg = EXPresult(1:pick:ndata,2);
+        h1=plot(xarg,yarg,'o','DisplayName',strcat('EXP-',num2str(k))); % Experimental data
+        set(h1, 'color', cmap(1,:));
+        set(h1, 'markerfacecolor', get(h1, 'color'),'markersize', 10);
+        hold on
+    end
+%   Simulation data
+    for k=1:nsim
+        SIMresult=SIMdata{:,k}; 
+        h2=plot(SIMresult(:,1),SIMresult(:,2),'-','DisplayName',strcat('SIM-',num2str(k))); % Simulation data
+        set(h2, 'color', cmap(2,:),'linewidth', 4);
+        hold on
+    end
+    xlabel('Principal strain') % x-axis label
+    ylabel('Principal stress (MPa)') % y-axis label
     grid on
-    plot(EXPdata{k}(:,1),SIMdata{k}(:,2),'.-r') % Simulation data
-    legend('EXP','SIM','Location','Best')
-    axis([0.9*bc(1) 1.1*bc(2) 0.9*min(EXPdata{k}(:,2)) 1.1*max(EXPdata{k}(:,2))])
-    title(filemat{k})
-    xlabel('Effective plastic strain') % x-axis label
-    ylabel('True stress (MPa)') % y-axis label
-end
 end
 end
 %% [3] Anistropic yield function identification
@@ -334,9 +374,6 @@ for k=0:91
     SIMdata(k+1,2)=ps(1)/sig_bar;
     % [3.1.5] R-value
     dfds=statevUMAT(end, 59:58+ntens);
-    if k==45
-        test=1;
-    end
     ple=rotmat(-ang,dfds,1);
     if k <= 90
         SIMdata(k+1,3)=-ple(2)/(ple(1)+ple(2));

@@ -15,20 +15,15 @@ close all
 clc
 addpath 'Data'
 %% Define material data
-filemat='AA6022_EXP_9CYCLE';
+filemat='CR980XG3_shear_E20_FR';
 ang=0;
-data0=csvread('AA6022_EXP_9CYCLE.csv');
+filename=append(filemat,'.csv');
+data0=csvread(filename);
 dataNo=3000; % Selected # of data
 mode=2; % 1: Eng -> True | 2: True -> True
-% bc0=0.05;
-%  bc0=[0.06 0.0];
+bc0=[0.20 -0.29];
 % bc0=[0.06 -0.06 0.06];
-% bc0=[0.02041];
-% bc0=[0.02041 -0.00043];
-% bc0=[0.02041 -0.00043 0.04107];
-% bc0=[0.02041 -0.00043 0.04107 0.01980 0.06201 0.04025 0.08362];
-bc0=[0.02041 -0.00043 0.04107 0.01980 0.06201 0.04025 0.08362 0.06132 0.10539 0.08268 0.12768 0.10443 0.15048 0.12662 0.17373 0.14959 0.18813];
-Tol=5e-5;
+Tol=2e-3;
 %% Set up boundary condition
 [data_temp, indx0]=unique(data0(:,2),'stable');
 data=zeros([max(size(data_temp)), 2]);
@@ -36,10 +31,14 @@ for i=1:max(size(indx0))
     data(i,1)=data0(indx0(i),1);
     data(i,2)=data0(indx0(i),2);
 end
-bc=log(1+bc0);
 if mode==1 % Eng -> True
     data(:,2)=data(:,2).*(1+data(:,1));
     data(:,1)=log(1+data(:,1));
+    bc=log(1+bc0);
+    bc1=bc;
+else
+    bc=bc0;
+    bc1=exp(bc)-1;
 end
 nstep=max(size(bc));
 ndata=max(size(data));
@@ -64,6 +63,7 @@ end
 %% Plot the Data pre-processing
 lgn=cell(size(nstep));
 figure(51);
+set(gcf, 'WindowStyle','docked')
 for k=1:nstep
     plot(MATdata{k}(:,1),MATdata{k}(:,2), '-o');
     if k==1

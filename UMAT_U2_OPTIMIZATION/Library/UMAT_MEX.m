@@ -22,8 +22,8 @@ function [varargout]= UMAT_MEX(props, statev, delas, ang, s0)
     end
 %   non-zero stress component
     s=rotmat(ang, s0, 2).*1;
-    [statev0, stress0]= MML_UMAT(props, statev, s, delas(end,:));
-    dfds=statev0(59:58+ntens);
+    [statev0, stress0]= MML_UMAT(props, statev, s, delas(2,:));
+    dfds=statev0(6:5+ntens);
     dfds0=rotmat(-ang,dfds,1);
     sn=zeros([1, ntens]);
     for i=1:ntens
@@ -41,7 +41,7 @@ function [varargout]= UMAT_MEX(props, statev, delas, ang, s0)
 	scale=1/dfds0(rindx);
 %%
     for i=1:time
-        if statev(4)==1
+        if statev(5)~=0
             dplas(i,:)=delas0(i,rindx)*scale*dfds;
             if rindx>ndi
                 dstran(i,:)=delas(i,:);
@@ -64,9 +64,9 @@ function [varargout]= UMAT_MEX(props, statev, delas, ang, s0)
         for n=1:ntens
             double=double+abs(dstran(i,n));
         end
-        if double<=Tol && i>1
-            stress1(i,:)=stress1(i-1,:);
-        end
+%         if double<=Tol && i>1
+%             stress1(i,:)=stress1(i-1,:);
+%         end
         stress=stress1(i,:);
         statev=statev1(i,:);
         

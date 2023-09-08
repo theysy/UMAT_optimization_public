@@ -14,12 +14,13 @@ clc
 addpath 'Data'
 %% Define details of the Data pre-processing
 dataNo=500;
-ang(1)=90; % Direction for pre-strain (1st Loading)
-ang(2)=45; % Direction for second-loading (2nd Loading)
-filemat='EDDQ-TDT-RD45T';
+ang(1)=00; % Direction for pre-strain (1st Loading)
+ang(2)=90; % Direction for second-loading (2nd Loading)
+filemat='CR980XG3_RDT15_RD90T';
 
 %% equivalent strain - true stress
-data0=csvread('EDDQ_TDT-RD45T.CSV');
+filename=append(filemat,'.csv');
+data0=csvread(filename);
 [data_temp, indx0]=unique(data0(:,2),'stable');
 data=zeros([max(size(data_temp)), 2]);
 for i=1:max(size(indx0))
@@ -32,6 +33,7 @@ MATdata(:,1)=data(1:pick:end,1);
 MATdata(:,2)=data(1:pick:end,2);
 bc(1)=MATdata(1,1);
 bc(2)=max(MATdata(:,1));
+figure(1); set(gcf, 'WindowStyle','docked');
 plot(MATdata(:,1), MATdata(:,2), '-o');
 grid on
 %% Save the experimental data

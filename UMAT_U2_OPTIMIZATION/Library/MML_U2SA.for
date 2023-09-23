@@ -1,8 +1,6 @@
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C                                                                             C
-C     THE ORIGINAL UMAT CODE WAS WRITTEN BY J.-W. LEE (2010. 11)              C
-C                                                                             C
-C     NAME    : SEONG-YONG  YOON                                              C
+C     NAME    : SEONGYONG  YOON                                               C
 C     ADVISOR : FREDERIC BARLAT                                               C
 C     E-MAIL  : theysy@postech.ac.kr                                          C
 C     GIT-HUB : https://github.com/theysy                                     C

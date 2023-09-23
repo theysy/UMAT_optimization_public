@@ -25,7 +25,7 @@ addpath 'Library'
 addpath 'UMAT_props'
 tic
 %%   Compilation of UMAT subroutine using MEX.
-%    mex -g MML_UMAT.f
+%    mex MML_UMAT.f
 %%  Identification opt_par: Read PROPS.csv
 
 props=csvread('PROPS_CR980XG3_HAH20CR.csv');

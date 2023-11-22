@@ -26,7 +26,7 @@ addpath 'Library'
 addpath 'UMAT_props'
 tic
 %%   Compilation of UMAT subroutine using MEX.
-%    mex -g MML_UMAT.f
+%    mex MML_UMAT.f
 %%  Identification opt_par: Read PROPS.csv
 props=csvread('props_TR1180_HAH20.csv');
 optparam.props=props;
@@ -68,12 +68,12 @@ elseif props(1)==4
     ub=X;
 % [5] HAH20
 elseif floor(props(1))==5
-%     X=[300, 300, 0.5, 0.93, 15]'; % K1, K2, K3, K4, K5
-%     lb=[50, 50, 0.3, 0.9, 1];
-%     ub=[450 450 1.0 0.95 60];
-    X=props(23:27); % K1, K2, K3, K4, K5
-    lb=X;
-    ub=X;
+    X=[300, 300, 0.5, 0.93, 15]'; % K1, K2, K3, K4, K5
+    lb=[50, 50, 0.3, 0.9, 1];
+    ub=[450 450 1.0 0.95 60];
+%     X=props(23:27); % K1, K2, K3, K4, K5
+%     lb=X;
+%     ub=X;
 end
 xdim=max(size(X));
 %% SET optimization parameters

@@ -24,7 +24,7 @@ addpath 'Data'
 addpath 'Library'
 addpath 'UMAT_props'
 %%   Compilation of UMAT subroutine using MEX.
-%    mex -g MML_UMAT.f
+%    mex MML_UMAT.f
 %%  Identification opt_par: Read PROPS.csv
 props=csvread('props_AA2090_yld2k.csv');
 optparam.props=props;
@@ -71,6 +71,7 @@ optparam.lb=lb;
 optparam.ub=ub;
 optparam.weight(1)= 1;
 optparam.weight(2)= 0.1;
+optparam.weight(3)= 0.0;
 optparam.filemat{1} = 'AA2090_DATA';
 optparam.mode=20; % Anisotropic yield function identification
 optparam.optalg=1; % 1: Nelder-Mead | 2: Genetic | 3: Pattensearch | 4: Globalsearch

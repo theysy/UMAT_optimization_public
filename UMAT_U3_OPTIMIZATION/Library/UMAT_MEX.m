@@ -39,6 +39,7 @@ function [varargout]= UMAT_MEX(props, statev, delas, ang, s0)
         end
     end
 	scale=1/dfds0(rindx);
+%     scale=1;
 %%
     for i=1:time
         if statev(4)==1

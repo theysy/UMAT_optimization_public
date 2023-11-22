@@ -220,11 +220,11 @@ for k=1:nsim % Number of simulations
         end
         [strainUMAT, stressUMAT, statevUMAT]=UMAT_MEX(props, statev, dstran, ang(i), s);
         for m=1:time
-            if abs(statevUMAT(m,1)-bc(i)) < 1e-5
+            if abs(statevUMAT(m,1)-bc(i)) < 1e-4
                 indx=m;
                 break;
             else
-                indx=0;
+                indx=time;
             end
         end
     end

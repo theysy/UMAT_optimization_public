@@ -15,7 +15,7 @@ addpath 'Data'
 %% Define details of the Data pre-processing
 dataNo=500;
 ang(1)=90; % Direction for pre-strain (1st Loading)
-ang(2)=0; % Direction for second-loading (2nd Loading)
+ang(2)=00; % Direction for second-loading (2nd Loading)
 filemat='EDDQ_TDT-RDT';
 
 %% equivalent strain - true stress

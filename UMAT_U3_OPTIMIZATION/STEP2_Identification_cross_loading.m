@@ -25,9 +25,8 @@ addpath 'Library'
 addpath 'UMAT_props'
 tic
 %%   Compilation of UMAT subroutine using MEX.
-%    mex -g MML_UMAT.f
+%    mex MML_UMAT.f
 %%  Identification opt_par: Read PROPS.csv
-
 props=csvread('props_EDDQ.csv');
 % props=csvread('props.csv');
 optparam.props=props;
@@ -38,9 +37,9 @@ if props(1)==0
     X=[2.5 38 85000 2.46e-10 180 30e-6 2.8 0.8 0 1e13];
     lb=[2.5 0 85000 2.46e-10 180 1e-6 0.0 0.8 0 1e10];
     ub=[2.5 100 85000 2.46e-10 180 60e-6 20.0 0.8 0 1e14];
-%     X=props(9:18); % K, K1, K2, K3, K4, K5
-%     lb=X;
-%     ub=X;
+    X=props(9:18);
+    lb=X;
+    ub=X;
     xdim=max(size(X));
 % [1] Chaboche
 elseif props(1)==1
@@ -70,9 +69,9 @@ elseif props(1)==4
     ub=X;
 % [5] HAH20
 elseif floor(props(1))==5
-%     X=[1.0, 65, 1.4, 450]; % C, KC, L, KL
-%      lb=[1.0 65 1.0 0.1];
-%      ub=[1.0 65 2.0 950.0];
+    X=[1.0, 65, 1.4, 450]; % C, KC, L, KL
+     lb=[1.0 65 1.0 0.1];
+     ub=[1.0 65 2.0 950.0];
     X=props(28:31);
     lb=X;
     ub=X;
@@ -91,9 +90,9 @@ optparam.lb=lb;
 optparam.ub=ub;
 optparam.weight(1)= 2.0;
 optparam.weight(2)= 1.0;
-% optparam.filemat{1} = 'EXP_RD45T';
 optparam.filemat{1} = 'EDDQ_TDT-RD45T';
-% optparam.filemat{2} = 'EDDQ_TDT-RDT';
+optparam.filemat{2} = 'EDDQ_TDT-RDT';
+% optparam.filemat{1} = 'EDDQ_TDT-RDT';
 optparam.mode=12; % Path change (cross-loading)
 optparam.optalg=1; % 1: Nelder-Mead | 2: Genetic | 3: Pattensearch | 4: Globalsearch
 if optparam.optalg==1 || optparam.optalg==4

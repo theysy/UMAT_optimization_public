@@ -45,12 +45,12 @@ elseif props(2)==3
 %     ub=X;
 % Yld2004-18p
 elseif props(2)==4
-%     X=ones([1,18]);
-%     lb=ones(size(X)).*(-0.1);
-%     ub=ones(size(X)).*(2);
-    X=props(33:50);
-    lb=X;
-    ub=X;
+    X=ones([1,18]);
+    lb=ones(size(X)).*(-0.1);
+    ub=ones(size(X)).*(2);
+%     X=props(33:50);
+%     lb=X;
+%     ub=X;
 else
     X=[1 1 1 1 1 1 1 1];
     lb=X;
@@ -69,9 +69,9 @@ optparam.dt=1e-3;
 optparam.xdim=xdim;
 optparam.lb=lb;
 optparam.ub=ub;
-optparam.weight(1)= 1;
-optparam.weight(2)= 0.1;
-optparam.weight(3)= 0.1;
+optparam.weight(1)= 1;   % Weight for major angles
+optparam.weight(2)= 0.1; % Weight for minor angles
+optparam.weight(3)= 0.1; % Weight between Nflow and Rvals
 optparam.filemat{1} = 'AA2090_DATA';
 optparam.mode=20; % Anisotropic yield function identification
 optparam.optalg=1; % 1: Nelder-Mead | 2: Genetic | 3: Pattensearch | 4: Globalsearch
@@ -99,7 +99,7 @@ if optparam.optalg==1
     options=optimset('Display','iter','PlotFcns',@optimplotfval);
     options.TolFun=1e-4;
     options.TolX=1e-3;
-    options.MaxIter=400;
+    options.MaxIter=xdim*100;
     options.MaxFunEvals=1e+04;
     [Poptim,fval,exitflag,output] = fminsearchbnd(@(nX) UMAT_OPT(nX,optparam),nX,nlb,nub,options);
 elseif optparam.optalg==2

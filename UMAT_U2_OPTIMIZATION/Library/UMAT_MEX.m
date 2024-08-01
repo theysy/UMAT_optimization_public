@@ -22,7 +22,7 @@ function [varargout]= UMAT_MEX(props, statev, delas, ang, s0)
     end
 %   non-zero stress component
     s=rotmat(ang, s0, 2).*1;
-    [statev0, stress0]= MML_UMAT(props, statev, s, delas(2,:));
+    [statev0, stress0]= MML_UMAT(props, statev, s, delas(end,:));
     dfds=statev0(6:5+ntens);
     dfds0=rotmat(-ang,dfds,1);
     sn=zeros([1, ntens]);

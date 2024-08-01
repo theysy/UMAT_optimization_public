@@ -327,6 +327,7 @@ elseif props(2)==4 % Yld2004-18p
 else
     props(33:33+xdim-1)=X;
 end
+props(5)=0;
 load(filemat{1});
 %--------------------------------------------------------------------------
 %   [3.1] Simulate anisotropy of material
@@ -369,11 +370,11 @@ for k=0:91
     % [3.1.3] Restore angle
     SIMdata(k+1,1)=ang;
     % [3.1.4] Normalized flow stress
-    sig_bar=statevUMAT(end,2);
+    sig_bar=statevUMAT(end,3);
     ps=trans_principal(stressUMAT(end,:), 1);
     SIMdata(k+1,2)=ps(1)/sig_bar;
     % [3.1.5] R-value
-    dfds=statevUMAT(end, 59:58+ntens);
+    dfds=statevUMAT(end, 6:5+ntens);
     ple=rotmat(-ang,dfds,1);
     if k <= 90
         SIMdata(k+1,3)=-ple(2)/(ple(1)+ple(2));
@@ -390,7 +391,7 @@ if nrows==4 % 0, 45, 90, b
     indx{2}=[0, 45, 90, 91];
     indx{3}=[1, 2, 3, 4];
     indx{4}=[1, 2, 3, 4];
-else
+elseif nrows==8
     indx{1}=[0, 45, 90, 91];
     indx{2}=[15, 30, 60, 75];
     indx{3}=[1, 4, 7, 8];
@@ -408,7 +409,8 @@ gap=(gap1+gap2)+weight(3)*(gap3+gap4);
 %   [3.4] Plot the simulation results
 if plotmode==1
     figure(52);
-    set(gcf, 'Position',  [500, 400, 500*nsim, 400])
+%     set(gcf, 'Position',  [500, 400, 500*nsim, 400])
+    set(gcf, 'WindowStyle','docked');
     hold off
     yyaxis left
     h1=plot(EXPdata(1:end-1,1),EXPdata(1:end-1,2),'--o');
